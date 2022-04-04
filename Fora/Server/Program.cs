@@ -3,6 +3,7 @@ global using Fora.Shared;
 global using Microsoft.AspNetCore.Identity;
 global using Fora.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using Fora.Server.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +28,6 @@ using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider()
     var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-
-
     context.Database.Migrate();
 
     if (!context.Users.Any())
@@ -51,6 +50,8 @@ using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider()
         await userManager.AddToRoleAsync(newUser, "Admin");
     }
 }
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
