@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Fora.Server.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
@@ -7,29 +7,52 @@ namespace Fora.Server.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserService _userService;
 
-        public UsersController(SignInManager<ApplicationUser> signInManager)
+        public UsersController(IUserService userService)
         {
-            _signInManager = signInManager;
+            _userService = userService;
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUser(UserModel user)
+        public async Task<ActionResult> CreateUser(SignUpModel user)
         {
             // skapa användare
-            // tilldela roll
-            // skapa usermodel
-            return Created("", user);
+            var createdUser = await _userService.AddUser(user);
+
+            if (createdUser != null)
+            {
+                return Created("", user);
+            }
+            return BadRequest();
         }
 
         [HttpPost]
-        public async Task<ActionResult> SignIn()
+        [Route("login")]
+        public async Task<ActionResult> LogIn()
         {
             // sign in user
             // return token
             // return unauthorized
             return Unauthorized();
+        }
+
+        [HttpDelete]
+        public async Task RemoveUser()
+        {
+
+        }
+
+        [HttpPut]
+        public async Task ChangePassword()
+        {
+
+        }
+
+        [HttpPut]
+        public async Task MakeAdmin()
+        {
+
         }
     }
 }
