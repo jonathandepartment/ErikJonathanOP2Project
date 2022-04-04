@@ -20,6 +20,38 @@ builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(aut
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
 
+// skapa admin konto
+using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider())
+{
+    var context = serviceProvider.GetRequiredService<AuthDbContext>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+
+
+    context.Database.Migrate();
+
+    if (!context.Users.Any())
+    {
+        // Skapa roll
+        IdentityRole adminRole = new();
+        adminRole.Name = "Admin";
+
+        await roleManager.CreateAsync(adminRole);
+
+        // Skapa användare
+        ApplicationUser newUser = new();
+        newUser.UserName = "admin";
+        newUser.Email = "anders@admin.se";
+        string password = "Admin1#";
+
+        await userManager.CreateAsync(newUser, password);
+
+        // Tilldela roll
+        await userManager.AddToRoleAsync(newUser, "Admin");
+    }
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
