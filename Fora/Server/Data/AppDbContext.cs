@@ -13,7 +13,6 @@ namespace Fora.Server.Data
         public DbSet<ThreadModel> Threads { get; set; }
         public DbSet<MessageModel> Messages { get; set; }
         public DbSet<UserModel> Users { get; set; }
-        public string Eriktest { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
