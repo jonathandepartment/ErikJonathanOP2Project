@@ -17,7 +17,9 @@ namespace Fora.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateUser(UserModel user)
         {
-            
+            // skapa användare
+            // tilldela roll
+            // skapa usermodel
             return Created("", user);
         }
 
