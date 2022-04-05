@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Fora.Server.Services.UserService
 {
@@ -6,11 +8,13 @@ namespace Fora.Server.Services.UserService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UserService(SignInManager<ApplicationUser> signInManager, AppDbContext context)
+        public UserService(SignInManager<ApplicationUser> signInManager, AppDbContext context, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _context = context;
+            _configuration = configuration;
         }
         public async Task<ApplicationUser> AddUser(SignUpModel user)
         {
@@ -47,14 +51,58 @@ namespace Fora.Server.Services.UserService
             throw new NotImplementedException();
         }
 
-        public Task LoginUser(string username, string password)
+        public async Task<string> LoginUser(UserDTO user)
         {
-            throw new NotImplementedException();
+            var signInResult = await _signInManager.PasswordSignInAsync(user.Username, user.Password, false, false);
+            if (signInResult.Succeeded)
+            {
+                var confirmedUser = await _signInManager.UserManager.FindByNameAsync(user.Username);
+
+                // Check if user is admin
+                var adminCheck = await _signInManager.UserManager.IsInRoleAsync(confirmedUser, "admin");
+
+                // return token with claims
+
+                if (adminCheck)
+                {
+                    return CreateToken(confirmedUser, true);
+                }
+                return CreateToken(confirmedUser);
+            }
+            return null;
         }
 
         public Task MakeAdmin(string id)
         {
             throw new NotImplementedException();
         }
+
+        private string CreateToken(ApplicationUser user, bool admin = false)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+            };
+
+            if (admin)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: cred);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
+        }
+
     }
 }

@@ -15,24 +15,29 @@ namespace Fora.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUser(SignUpModel user)
+        public async Task<ActionResult> CreateUser(SignUpModel request)
         {
             // skapa användare
-            var createdUser = await _userService.AddUser(user);
+            var createdUser = await _userService.AddUser(request);
 
             if (createdUser != null)
             {
-                return Created("", user);
+                return Created("", request);
             }
             return BadRequest();
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> LogIn()
+        public async Task<ActionResult> LogIn(UserDTO request)
         {
             // sign in user
+            var token = await _userService.LoginUser(request);
             // return token
+            if (token != null)
+            {
+                return Ok(token);
+            }
             // return unauthorized
             return Unauthorized();
         }

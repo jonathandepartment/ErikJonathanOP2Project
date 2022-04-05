@@ -3,7 +3,7 @@
     public interface IUserService
     {
         Task<ApplicationUser> AddUser(SignUpModel user);
-        Task LoginUser(string username, string password);
+        Task<string> LoginUser(UserDTO user);
         Task DeleteUser(string id);
         Task GetUser(string id);
         Task ChangePassword(string newPassword);
