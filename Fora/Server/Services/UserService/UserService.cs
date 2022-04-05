@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -16,7 +17,7 @@ namespace Fora.Server.Services.UserService
             _context = context;
             _configuration = configuration;
         }
-        public async Task<ApplicationUser> AddUser(SignUpModel user)
+        public async Task<ServiceResponseModel<ApplicationUser>> AddUser(SignUpModel user)
         {
             ApplicationUser newUser = new ApplicationUser();
             newUser.UserName = user.Username;
@@ -31,9 +32,27 @@ namespace Fora.Server.Services.UserService
                 _context.Users.Add(userModelToDb);
                 await _context.SaveChangesAsync();
 
-                return newUser;
+                return new ServiceResponseModel<ApplicationUser>
+                {
+                    Data = newUser,
+                    success = true,
+                    message = $"User {newUser.UserName} created"
+                };
             }
-            return null;
+            var errors = CreateErrorString(result.Errors);
+
+            return new ServiceResponseModel<ApplicationUser>
+            {
+                Data = null,
+                success = false,
+                message = errors
+            };
+        }
+
+        private string CreateErrorString(IEnumerable<IdentityError> errors)
+        {
+            var errorMsgs = errors.Select(e => e.Description).ToList();
+            return string.Join("\n", errorMsgs);
         }
 
         public async Task<bool> ChangePassword(string id, string oldPassword, string newPassword)
@@ -58,6 +77,9 @@ namespace Fora.Server.Services.UserService
                 var removeResult = await _signInManager.UserManager.DeleteAsync(user);
                 if (removeResult.Succeeded)
                 {
+                    var userModelToRemove = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.UserName);
+                    _context.Users.Remove(userModelToRemove);
+                    await _context.SaveChangesAsync();
                     return true;
                 }
             }
@@ -69,30 +91,62 @@ namespace Fora.Server.Services.UserService
             throw new NotImplementedException();
         }
 
-        public async Task<string> LoginUser(UserDTO user)
+        public async Task<ServiceResponseModel<string>> LoginUser(UserDTO user)
         {
+            ServiceResponseModel<string> response = new ServiceResponseModel<string>();
+            
             var signInResult = await _signInManager.PasswordSignInAsync(user.Username, user.Password, false, false);
+
+            // Check credentials
             if (signInResult.Succeeded)
             {
-                var confirmedUser = await _signInManager.UserManager.FindByNameAsync(user.Username);
-
-                // Check if user is admin
-                var adminCheck = await _signInManager.UserManager.IsInRoleAsync(confirmedUser, "admin");
-
-                // return token with claims
-
-                if (adminCheck)
+                // Check if user is banned
+                var userModel = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
+                if (userModel.Banned)
                 {
-                    return CreateToken(confirmedUser, true);
+                    response.success = false;
+                    response.message = "User is banned";
                 }
-                return CreateToken(confirmedUser);
+                else
+                {
+                    var confirmedUser = await _signInManager.UserManager.FindByNameAsync(user.Username);
+
+                    // Check if user is admin
+                    var adminCheck = await _signInManager.UserManager.IsInRoleAsync(confirmedUser, "admin");
+
+                    // return token with claims
+
+                    if (adminCheck)
+                    {
+                        response.Data = CreateToken(confirmedUser, true);
+                    }
+                    else
+                    {
+                        response.Data = CreateToken(confirmedUser);
+                    }
+                    response.success = true;
+                }
             }
-            return null;
+            else
+            {
+                response.success = false;
+                response.message = signInResult.ToString();
+            }
+            return response;
         }
 
-        public Task MakeAdmin(string id)
+        public async Task<bool> MakeAdmin(string id)
         {
-            throw new NotImplementedException();
+            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var result = await _signInManager.UserManager.AddToRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private string CreateToken(ApplicationUser user, bool admin = false)
