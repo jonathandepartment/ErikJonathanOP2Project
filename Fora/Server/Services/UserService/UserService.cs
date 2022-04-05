@@ -86,9 +86,14 @@ namespace Fora.Server.Services.UserService
             return false;
         }
 
-        public Task GetUser(string id)
+        public async Task<bool> GetUser(string id)
         {
-            throw new NotImplementedException();
+            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                 return await _signInManager.UserManager.IsInRoleAsync(user, "Admin");
+            }
+            return false;
         }
 
         public async Task<ServiceResponseModel<string>> LoginUser(UserDTO user)
@@ -176,5 +181,18 @@ namespace Fora.Server.Services.UserService
             return jwt;
         }
 
+        public async Task<bool> RemoveAdmin(string id)
+        {
+            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var result = await _signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

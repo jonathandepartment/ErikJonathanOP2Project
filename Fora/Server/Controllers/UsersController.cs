@@ -14,6 +14,17 @@ namespace Fora.Server.Controllers
             _userService = userService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> CheckIfAdmin(string id)
+        {
+            var result = await _userService.GetUser(id);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateUser(SignUpModel request)
         {
@@ -66,7 +77,7 @@ namespace Fora.Server.Controllers
 
         [HttpPut]
         [Route("[action]/{id}")]
-        public async Task<ActionResult> MakeAdmin(string id)
+        public async Task<ActionResult> PromoteAdmin(string id)
         {
             var makeAdminResult = await _userService.MakeAdmin(id);
             if (makeAdminResult)
@@ -78,7 +89,7 @@ namespace Fora.Server.Controllers
 
         [HttpPut]
         [Route("[action]/{id}")]
-        public async Task<ActionResult> RemoveAdmin(string id)
+        public async Task<ActionResult> DemoteAdmin(string id)
         {
             var makeAdminResult = await _userService.RemoveAdmin(id);
             if (makeAdminResult)
