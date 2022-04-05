@@ -36,14 +36,32 @@ namespace Fora.Server.Services.UserService
             return null;
         }
 
-        public Task ChangePassword(string newPassword)
+        public async Task<bool> ChangePassword(string id, string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
+                if (changePasswordResult.Succeeded)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public Task DeleteUser(string id)
+        public async Task<bool> DeleteUser(string id)
         {
-            throw new NotImplementedException();
+            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var removeResult = await _signInManager.UserManager.DeleteAsync(user);
+                if (removeResult.Succeeded)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public Task GetUser(string id)

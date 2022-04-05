@@ -4,9 +4,9 @@
     {
         Task<ApplicationUser> AddUser(SignUpModel user);
         Task<string> LoginUser(UserDTO user);
-        Task DeleteUser(string id);
+        Task<bool> DeleteUser(string id);
         Task GetUser(string id);
-        Task ChangePassword(string newPassword);
+        Task<bool> ChangePassword(string id, string oldPassword, string newPassword);
         Task MakeAdmin(string id);
     }
 }
