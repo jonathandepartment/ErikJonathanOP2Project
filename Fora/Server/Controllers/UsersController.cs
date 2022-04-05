@@ -42,16 +42,26 @@ namespace Fora.Server.Controllers
             return Unauthorized();
         }
 
-        [HttpDelete]
-        public async Task RemoveUser()
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> RemoveUser([FromRoute] string id)
         {
-
+            var removeResult = await _userService.DeleteUser(id);
+            if (removeResult)
+            {
+                return NoContent();
+            }
+            return BadRequest("No matching user was found");
         }
 
-        [HttpPut]
-        public async Task ChangePassword()
+        [HttpPut("{id}")]
+        public async Task<ActionResult> ChangePassword([FromRoute] string id, ChangePasswordModel model)
         {
-
+            var passwordChangeResult = await _userService.ChangePassword(id, model.OldPassword, model.NewPassword);
+            if (passwordChangeResult)
+            {
+                return Ok("Password was changed");
+            }
+            return BadRequest();
         }
 
         [HttpPut]
