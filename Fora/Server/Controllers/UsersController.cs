@@ -20,11 +20,11 @@ namespace Fora.Server.Controllers
             // skapa användare
             var createdUser = await _userService.AddUser(request);
 
-            if (createdUser != null)
+            if (createdUser.success)
             {
-                return Created("", request);
+                return Created("", createdUser.message);
             }
-            return BadRequest();
+            return BadRequest(createdUser.message);
         }
 
         [HttpPost]
@@ -32,14 +32,14 @@ namespace Fora.Server.Controllers
         public async Task<ActionResult> LogIn(UserDTO request)
         {
             // sign in user
-            var token = await _userService.LoginUser(request);
+            var result = await _userService.LoginUser(request);
             // return token
-            if (token != null)
+            if (result.success)
             {
-                return Ok(token);
+                return Ok(result.Data);
             }
             // return unauthorized
-            return Unauthorized();
+            return Unauthorized(result.message);
         }
 
         [HttpDelete("{id}")]
@@ -65,9 +65,27 @@ namespace Fora.Server.Controllers
         }
 
         [HttpPut]
-        public async Task MakeAdmin()
+        [Route("[action]/{id}")]
+        public async Task<ActionResult> MakeAdmin(string id)
         {
+            var makeAdminResult = await _userService.MakeAdmin(id);
+            if (makeAdminResult)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
+        [HttpPut]
+        [Route("[action]/{id}")]
+        public async Task<ActionResult> RemoveAdmin(string id)
+        {
+            var makeAdminResult = await _userService.RemoveAdmin(id);
+            if (makeAdminResult)
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }
