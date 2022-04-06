@@ -5,11 +5,11 @@ namespace Fora.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public AccountController(IUserService userService)
         {
             _userService = userService;
         }
