@@ -1,10 +1,11 @@
 global using Fora.Server.Data;
+global using Fora.Server.Models;
 global using Fora.Shared;
 global using Fora.Shared.DTO;
 global using Microsoft.AspNetCore.Identity;
-global using Fora.Server.Models;
-using Microsoft.EntityFrameworkCore;
+using Fora.Server.Services.InterestService;
 using Fora.Server.Services.UserService;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,7 @@ using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider()
 }
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IInterestService, InterestService>();
 
 var app = builder.Build();
 
