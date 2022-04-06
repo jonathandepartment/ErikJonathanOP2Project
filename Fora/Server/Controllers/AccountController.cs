@@ -1,4 +1,4 @@
-﻿using Fora.Server.Services.UserService;
+﻿using Fora.Server.Services.AccountService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
@@ -7,18 +7,18 @@ namespace Fora.Server.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IAccountService _accountService;
 
-        public AccountController(IUserService userService)
+        public AccountController(IAccountService accountService)
         {
-            _userService = userService;
+            _accountService = accountService;
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAllUsers()
         {
             // call service
-            var result = await _userService.GetUsers();
+            var result = await _accountService.GetUsers();
             // if successful return list + ok
             if (result != null)
             {
@@ -34,7 +34,7 @@ namespace Fora.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> CheckIfAdmin(string id)
         {
-            var result = await _userService.CheckIfAdmin(id);
+            var result = await _accountService.CheckIfAdmin(id);
             if (result)
             {
                 return Ok();
@@ -46,7 +46,7 @@ namespace Fora.Server.Controllers
         public async Task<ActionResult> CreateUser(SignUpModel request)
         {
             // skapa användare
-            var createdUser = await _userService.AddUser(request);
+            var createdUser = await _accountService.AddUser(request);
 
             if (createdUser.success)
             {
@@ -60,7 +60,7 @@ namespace Fora.Server.Controllers
         public async Task<ActionResult> LogIn(UserDTO request)
         {
             // sign in user
-            var result = await _userService.LoginUser(request);
+            var result = await _accountService.LoginUser(request);
             // return token
             if (result.success)
             {
@@ -73,7 +73,7 @@ namespace Fora.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveUser([FromRoute] string id)
         {
-            var removeResult = await _userService.DeleteUser(id);
+            var removeResult = await _accountService.DeleteUser(id);
             if (removeResult)
             {
                 return NoContent();
@@ -84,7 +84,7 @@ namespace Fora.Server.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangePassword([FromRoute] string id, ChangePasswordModel model)
         {
-            var passwordChangeResult = await _userService.ChangePassword(id, model.OldPassword, model.NewPassword);
+            var passwordChangeResult = await _accountService.ChangePassword(id, model.OldPassword, model.NewPassword);
             if (passwordChangeResult)
             {
                 return Ok("Password was changed");
@@ -96,7 +96,7 @@ namespace Fora.Server.Controllers
         [Route("[action]/{id}")]
         public async Task<ActionResult> PromoteAdmin(string id)
         {
-            var makeAdminResult = await _userService.MakeAdmin(id);
+            var makeAdminResult = await _accountService.MakeAdmin(id);
             if (makeAdminResult)
             {
                 return Ok();
@@ -108,7 +108,7 @@ namespace Fora.Server.Controllers
         [Route("[action]/{id}")]
         public async Task<ActionResult> DemoteAdmin(string id)
         {
-            var makeAdminResult = await _userService.RemoveAdmin(id);
+            var makeAdminResult = await _accountService.RemoveAdmin(id);
             if (makeAdminResult)
             {
                 return Ok();

@@ -3,9 +3,11 @@ global using Fora.Server.Models;
 global using Fora.Shared;
 global using Fora.Shared.DTO;
 global using Microsoft.AspNetCore.Identity;
+global using Fora.Server.Models;
+global using Microsoft.EntityFrameworkCore;
 using Fora.Server.Services.InterestService;
 using Fora.Server.Services.UserService;
-using Microsoft.EntityFrameworkCore;
+using Fora.Server.Services.AccountService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,7 @@ using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider()
 
         await roleManager.CreateAsync(adminRole);
 
-        // Skapa anv‰ndare
+        // Skapa anv√§ndare
         ApplicationUser newUser = new();
         newUser.UserName = "admin";
         newUser.Email = "anders@admin.se";
@@ -54,6 +56,7 @@ using (ServiceProvider serviceProvider = builder.Services.BuildServiceProvider()
 }
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IInterestService, InterestService>();
 
 var app = builder.Build();
