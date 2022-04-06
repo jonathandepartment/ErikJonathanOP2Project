@@ -86,7 +86,7 @@ namespace Fora.Server.Services.UserService
             return false;
         }
 
-        public async Task<bool> GetUser(string id)
+        public async Task<bool> CheckIfAdmin(string id)
         {
             var user = await _signInManager.UserManager.FindByIdAsync(id);
             if (user != null)
@@ -193,6 +193,17 @@ namespace Fora.Server.Services.UserService
                 }
             }
             return false;
+        }
+
+        public async Task<List<ApplicationUser>> GetUsers()
+        {
+            // snacka med databasen, hämta alla användare
+            var users = await _signInManager.UserManager.Users.ToListAsync();
+            if (users != null)
+            {
+                return users;
+            }
+            return null;
         }
     }
 }
