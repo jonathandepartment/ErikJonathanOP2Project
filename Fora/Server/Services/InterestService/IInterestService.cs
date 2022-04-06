@@ -3,7 +3,7 @@
     public interface IInterestService
     {
         Task<List<InterestModel>> GetInterests();
-        Task<List<InterestModel>> GetUserIneterests(int id);
+        Task<List<UserInterestModel>> GetUserInterests(int id);
         Task<List<InterestModel>> PostNewInterest();
         Task<List<InterestModel>> DeleteInterest(int id);
         Task<List<InterestModel>> PutUserInterests(int Id);

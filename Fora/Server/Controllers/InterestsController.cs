@@ -29,6 +29,19 @@ namespace Fora.Server.Controllers
 
             // else return null
         }
+        [HttpGet]
+        [Route("[action]/{id}")]
+        public async Task<ActionResult> GetUserInterests(int id)
+        {
+            // Call service
+            var result = await _interestService.GetUserInterests(id);
+            // If success return list of the users interests
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
+        }
 
     }
 }
