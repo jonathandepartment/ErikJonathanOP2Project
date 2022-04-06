@@ -14,10 +14,27 @@ namespace Fora.Server.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetAllUsers()
+        {
+            // call service
+            var result = await _userService.GetUsers();
+            // if successful return list + ok
+            if (result != null)
+            {
+                var userList = result
+                    .Select(u => new { u.Id, u.UserName })
+                    .ToList();
+                return Ok(userList);
+            }
+            // else return badrequest
+            return BadRequest();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> CheckIfAdmin(string id)
         {
-            var result = await _userService.GetUser(id);
+            var result = await _userService.CheckIfAdmin(id);
             if (result)
             {
                 return Ok();
