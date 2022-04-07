@@ -1,10 +1,12 @@
 ﻿using Fora.Server.Services.AccountService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
@@ -104,6 +106,7 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        
         [HttpPut]
         [Route("[action]/{id}")]
         public async Task<ActionResult> DemoteAdmin(string id)
