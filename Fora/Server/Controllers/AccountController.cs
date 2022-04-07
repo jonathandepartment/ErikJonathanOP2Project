@@ -6,7 +6,6 @@ namespace Fora.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;

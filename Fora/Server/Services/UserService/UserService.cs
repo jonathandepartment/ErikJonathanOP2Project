@@ -63,10 +63,6 @@ namespace Fora.Server.Services.UserService
         public async Task<UserModel> GetUser(string username)
         {
             var user = await _context.Users
-                .Include(u => u.UserInterests)
-                .Include(u => u.Threads)
-                .Include(u => u.Messages)
-                .Include(u => u.Interests)
                 .FirstOrDefaultAsync(x => x.Username == username);
             if (user == null)
             {
