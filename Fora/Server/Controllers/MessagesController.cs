@@ -1,5 +1,6 @@
 ﻿using Fora.Server.Services.MessageService;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace Fora.Server.Controllers
 {
@@ -14,11 +15,12 @@ namespace Fora.Server.Controllers
             _messageService = messageService;
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> ChangeMessage(int id,string newMessage)
+        public async Task<ActionResult> ChangeMessage(int id, [FromBody] string value)
         {
+            
             // get user from request
             //var userName = User.Identity.Name;
-            var result = await _messageService.EditMessage(id,newMessage);
+            var result = await _messageService.EditMessage(id, value);
             if (result != null)
             {
                 return Ok();
