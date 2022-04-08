@@ -12,6 +12,7 @@ namespace Fora.Server.Data
         public DbSet<InterestModel> Interests { get; set; }
         public DbSet<ThreadModel> Threads { get; set; }
         public DbSet<MessageModel> Messages { get; set; }
+        public DbSet<UserInterestModel> UserInterests { get; set; }
         public DbSet<UserModel> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
