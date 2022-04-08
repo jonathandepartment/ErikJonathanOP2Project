@@ -48,6 +48,13 @@
             {
                 InterestModel interestToAdd = new InterestModel();
                 interestToAdd.Name = interest.Name;
+
+                //*************************************************************
+                //Hämta användare
+                //Sätt interestToAdd = var user.Id
+                //interestToAdd.UserId
+                //*************************************************************
+
                 var newInterest = _context.Interests.Add(interestToAdd);
                 await _context.SaveChangesAsync();
 
