@@ -14,6 +14,18 @@ namespace Fora.Server.Controllers
         {
             _messageService = messageService;
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetThreadMessages(int id)
+        {
+            //var result = await _messageService.GetThreadMessages(id);
+            //if (result != null)
+            //{
+            //    return Ok(result);
+            //}
+            return BadRequest();
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangeMessage(int id, [FromBody] string value)
         {

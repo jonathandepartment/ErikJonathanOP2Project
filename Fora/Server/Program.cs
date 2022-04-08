@@ -7,6 +7,7 @@ global using Microsoft.EntityFrameworkCore;
 using Fora.Server.Services.AccountService;
 using Fora.Server.Services.InterestService;
 using Fora.Server.Services.MessageService;
+using Fora.Server.Services.ThreadService;
 using Fora.Server.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +64,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IInterestService, InterestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IThreadService, ThreadService>();
 
 //builder.Services.AddAuthorization(auth =>
 //{
