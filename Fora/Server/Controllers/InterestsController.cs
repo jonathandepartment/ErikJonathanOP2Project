@@ -44,11 +44,18 @@ namespace Fora.Server.Controllers
         }
 
         [HttpPost]
-        public async Task PostNewInterest(AddInterestModel interest)
+        public async Task<ActionResult> PostNewInterest(AddInterestModel interest)
         {
-            //if (interest != null || interest.Name != "") { }
-            await _interestService.PostNewInterest(interest);
+            string InterestName = interest.Name;
+            //if(!string.IsNullOrEmpty(interest))
+            if (!string.IsNullOrEmpty(InterestName))
+            {
+                await _interestService.PostNewInterest(interest);
+                return Ok("Interest added!");
+            }
+            return BadRequest();
         }
+
 
         [HttpDelete]
         [Route("{id}")]
