@@ -11,6 +11,7 @@
         public Task<List<InterestModel>> DeleteInterest(int id)
         {
             throw new NotImplementedException();
+            //_context.Interests.Remove()
         }
 
         public async Task<List<InterestModel>> GetInterests()
@@ -42,24 +43,22 @@
             return null;
         }
 
-        // Kontakta databasen och hämta alla intressen som en specifik användare har
-        //var userInterestsList = await _context.Users.Include(i => i.Interests).ToListAsync();
-        //    if (userInterestsList != null)
-        //    {
-        //        return null;
-        //    }
-        //    return null;
-
-
-
-        public Task<List<InterestModel>> PostNewInterest()
+        public async Task PostNewInterest(AddInterestModel interest)
         {
-            throw new NotImplementedException();
+            {
+                InterestModel interestToAdd = new InterestModel();
+                interestToAdd.Name = interest.Name;
+                var newInterest = _context.Interests.Add(interestToAdd);
+                await _context.SaveChangesAsync();
+
+            }
         }
+
 
         public Task<List<InterestModel>> PutUserInterests(int Id)
         {
             throw new NotImplementedException();
         }
+
     }
 }
