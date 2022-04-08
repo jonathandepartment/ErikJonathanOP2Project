@@ -1,0 +1,36 @@
+﻿@page "/signup"
+
+<h3>SignUp</h3>
+
+<EditForm Model="user" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <form>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <InputText id="username" @bind-Value="user.Username" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" @bind-Value="user.Email" />            
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" @bind-Value="user.Password" />
+        </div>
+        <div class="form-group">
+            <label for="verifypassword">Verify Password</label>
+            <InputText id="verifypassword" @bind-Value="user.VerifyPassword" type="password" />
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <ValidationSummary />
+</EditForm>
+
+@code {
+    SignUpModel user = new();
+
+    async Task HandleLogin()
+    {
+        
+    }
+}
