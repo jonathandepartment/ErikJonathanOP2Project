@@ -59,14 +59,33 @@ namespace Fora.Server.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<ActionResult> DeleteInterest(int id)
+        public async Task<ActionResult<InterestModel>> DeleteInterest(int id)
         {
-            var result = await _interestService.DeleteInterest(id);
-            if (result != null)
-            {
 
-            }
-            return Ok();
+            await _interestService.DeleteInterest(id);
+            return Ok("Interest removed");
         }
     }
 }
+//
+
+//[HttpDelete("{id:int}")]
+//public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+//{
+//    try
+//    {
+//        var employeeToDelete = await employeeRepository.GetEmployee(id);
+
+//        if (employeeToDelete == null)
+//        {
+//            return NotFound($"Employee with Id = {id} not found");
+//        }
+
+//        return await employeeRepository.DeleteEmployee(id);
+//    }
+//    catch (Exception)
+//    {
+//        return StatusCode(StatusCodes.Status500InternalServerError,
+//            "Error deleting data");
+//    }
+//}

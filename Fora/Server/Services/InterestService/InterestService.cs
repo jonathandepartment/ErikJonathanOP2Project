@@ -8,11 +8,6 @@
         {
             _context = context;
         }
-        public Task<List<InterestModel>> DeleteInterest(int id)
-        {
-            throw new NotImplementedException();
-            //_context.Interests.Remove()
-        }
 
         public async Task<List<InterestModel>> GetInterests()
         {
@@ -67,5 +62,13 @@
             throw new NotImplementedException();
         }
 
+        public async Task DeleteInterest(int id)
+        {
+            var interestToDelete = await _context.Interests.FirstOrDefaultAsync(i => i.Id == id);
+
+            _context.Interests.Remove(interestToDelete);
+            await _context.SaveChangesAsync();
+
+        }
     }
 }
