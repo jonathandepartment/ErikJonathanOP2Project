@@ -1,4 +1,5 @@
 ﻿using Fora.Server.Services.AccountService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +15,7 @@ namespace Fora.Server.Controllers
         {
             _accountService = accountService;
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<ActionResult> GetAllUsers()
         {

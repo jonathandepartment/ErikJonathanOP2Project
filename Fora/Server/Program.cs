@@ -9,6 +9,7 @@ using Fora.Server.Services.InterestService;
 using Fora.Server.Services.MessageService;
 using Fora.Server.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -62,6 +63,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IInterestService, InterestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+
+//builder.Services.AddAuthorization(auth =>
+//{
+//    auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+//        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+//        .RequireAuthenticatedUser().Build());
+//});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
