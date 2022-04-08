@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Fora.Server.Data
+﻿namespace Fora.Server.Data
 {
     public class AppDbContext : DbContext
     {

@@ -43,5 +43,23 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
+        public async Task PostNewInterest(AddInterestModel interest)
+        {
+            //if (interest != null || interest.Name != "") { }
+            await _interestService.PostNewInterest(interest);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteInterest(int id)
+        {
+            var result = await _interestService.DeleteInterest(id);
+            if (result != null)
+            {
+
+            }
+            return Ok();
+        }
     }
 }
