@@ -8,6 +8,9 @@ using Fora.Server.Services.AccountService;
 using Fora.Server.Services.InterestService;
 using Fora.Server.Services.MessageService;
 using Fora.Server.Services.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +63,19 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IInterestService, InterestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -82,6 +98,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();

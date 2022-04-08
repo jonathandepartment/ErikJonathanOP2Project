@@ -1,0 +1,16 @@
+﻿@page "/settings"
+@attribute [Authorize]
+
+<h3>Settings</h3>
+
+<AuthorizeView Roles="Admin">
+    <h3>Admin view</h3>
+</AuthorizeView>
+
+<AuthorizeView Roles="Iron Man">
+    <h3>Iron Man view</h3>
+</AuthorizeView>
+
+@code {
+
+}
