@@ -18,12 +18,18 @@ namespace Fora.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> GetThreadMessages(int id)
         {
-            //var result = await _messageService.GetThreadMessages(id);
-            //if (result != null)
-            //{
-            //    return Ok(result);
-            //}
-            return BadRequest();
+            var result = await _messageService.GetThreadMessages(id);
+            if (result.success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddMessage()
+        {
+
         }
 
         [HttpPut("{id}")]

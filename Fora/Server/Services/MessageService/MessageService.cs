@@ -1,4 +1,6 @@
-﻿namespace Fora.Server.Services.MessageService
+﻿using Fora.Shared.ViewModels;
+
+namespace Fora.Server.Services.MessageService
 {
     public class MessageService : IMessageService
     {
@@ -7,6 +9,11 @@
         public MessageService(AppDbContext context)
         {
             _context = context;
+        }
+
+        public Task<ServiceResponseModel<MessageModel>> AddMessage(int userId, int threadId, string message)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteMessage(int id)
@@ -49,6 +56,68 @@
                 success = false,
                 message = "Incorrect user or message could not be found"
             };
+        }
+
+        public async Task<ServiceResponseModel<List<MessageViewModel>>> GetThreadMessages(int threadId)
+        {
+            var thread = await _context.Threads.FirstOrDefaultAsync(t => t.Id == threadId);
+            if (thread != null)
+            {
+                var messages = await _context.Messages
+                    .Include(m => m.User)
+                    .Where(m => m.ThreadId == threadId)
+                    .ToListAsync();
+
+                
+                if (messages != null || messages.Count > 0)
+                {
+                    // convert list to new model
+                    var messagesVmList = ConvertToViewModels(messages);
+                    return new ServiceResponseModel<List<MessageViewModel>>
+                    {
+                        Data =messagesVmList,
+                        message = "",
+                        success = true,
+                    };
+                }
+
+                return new ServiceResponseModel<List<MessageViewModel>>
+                {
+                    Data = null,
+                    message = "No messages in thread",
+                    success = false
+                };
+            }
+
+            return new ServiceResponseModel<List<MessageViewModel>>
+            {
+                Data = null,
+                message = "No thread with that id",
+                success = false
+            };
+        }
+
+        private List<MessageViewModel> ConvertToViewModels(List<MessageModel> messages)
+        {
+            List<MessageViewModel> convertedMessages = new();
+
+            foreach (var message in messages)
+            {
+                convertedMessages.Add(new MessageViewModel
+                {
+                    Id = message.Id,
+                    Message = message.Message,
+                    User = new UserViewModel
+                    {
+                        Id = message.User.Id,
+                        Name = message.User.Username,
+                        Banned = message.User.Banned,
+                        Deleted = message.User.Deleted
+                    }
+                });
+            }
+
+            return convertedMessages;
         }
     }
 }
