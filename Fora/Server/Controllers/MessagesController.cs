@@ -29,7 +29,7 @@ namespace Fora.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> AddMessage()
         {
-
+            return Ok();
         }
 
         [HttpPut("{id}")]
