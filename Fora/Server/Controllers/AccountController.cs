@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -15,7 +16,8 @@ namespace Fora.Server.Controllers
         {
             _accountService = accountService;
         }
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult> GetAllUsers()
         {
@@ -72,9 +74,14 @@ namespace Fora.Server.Controllers
             return Unauthorized(result.message);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveUser([FromRoute] string id)
         {
+            // Check if correct user or admin
+            var user = User;
+
+            // remove user
             var removeResult = await _accountService.DeleteUser(id);
             if (removeResult)
             {
@@ -83,6 +90,7 @@ namespace Fora.Server.Controllers
             return BadRequest("No matching user was found");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangePassword([FromRoute] string id, ChangePasswordModel model)
         {
@@ -94,6 +102,7 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut]
         [Route("[action]/{id}")]
         public async Task<ActionResult> PromoteAdmin(string id)
@@ -106,7 +115,7 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
-        
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut]
         [Route("[action]/{id}")]
         public async Task<ActionResult> DemoteAdmin(string id)
