@@ -78,10 +78,7 @@ namespace Fora.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveUser([FromRoute] string id)
         {
-            // Check if correct user or admin
-            var user = User;
-
-            // remove user
+        
             var removeResult = await _accountService.DeleteUser(id);
             if (removeResult)
             {
