@@ -9,12 +9,14 @@ namespace Fora.Server.Services.AccountService
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _accessor;
 
-        public AccountService(SignInManager<ApplicationUser> signInManager, AppDbContext context, IConfiguration configuration)
+        public AccountService(SignInManager<ApplicationUser> signInManager, AppDbContext context, IConfiguration configuration, IHttpContextAccessor accessor)
         {
             _signInManager = signInManager;
             _context = context;
             _configuration = configuration;
+            _accessor = accessor;
         }
         public async Task<ServiceResponseModel<ApplicationUser>> AddUser(SignUpModel user)
         {
@@ -59,10 +61,15 @@ namespace Fora.Server.Services.AccountService
             var user = await _signInManager.UserManager.FindByIdAsync(id);
             if (user != null)
             {
-                var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
-                if (changePasswordResult.Succeeded)
+                // check if its the correct user changing the password
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+                if (user.UserName == currentUserName)
                 {
-                    return true;
+                    var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
+                    if (changePasswordResult.Succeeded)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -73,13 +80,22 @@ namespace Fora.Server.Services.AccountService
             var user = await _signInManager.UserManager.FindByIdAsync(id);
             if (user != null)
             {
-                var removeResult = await _signInManager.UserManager.DeleteAsync(user);
-                if (removeResult.Succeeded)
+                // get user name and role from request
+                var currentUserRole = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+
+                // check if admin
+                // if not admin, check if its the correct user
+                if (currentUserRole == "Admin" || user.UserName == currentUserName)
                 {
-                    var userModelToRemove = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.UserName);
-                    _context.Users.Remove(userModelToRemove);
-                    await _context.SaveChangesAsync();
-                    return true;
+                    var removeResult = await _signInManager.UserManager.DeleteAsync(user);
+                    if (removeResult.Succeeded)
+                    {
+                        var userModelToRemove = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.UserName);
+                        _context.Users.Remove(userModelToRemove);
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
                 }
             }
             return false;
