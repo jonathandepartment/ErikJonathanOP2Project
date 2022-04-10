@@ -1,5 +1,6 @@
 ﻿using Fora.Server.Services.ThreadService;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
@@ -14,7 +15,8 @@ namespace Fora.Server.Controllers
         {
             _threadService = threadService;
         }
-        
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetThreadsByInterest(int id)
         {
@@ -26,12 +28,12 @@ namespace Fora.Server.Controllers
             return BadRequest("No matching interest id");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<ActionResult> PostThread(AddThreadModel addThread)
         {
-            // !!! 6 is placeholder
-            // get user id from token, set to thread userid
-            var result = await _threadService.AddThread(addThread.InterestId, 6, addThread.Name);
+
+            var result = await _threadService.AddThread(addThread.InterestId, addThread.Name);
             if (result.success)
             {
                 return Created("/api/threads", result);
@@ -39,24 +41,24 @@ namespace Fora.Server.Controllers
             return BadRequest(result);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
-        public async Task<ActionResult> ChangeThreadName(int id,[FromBody] string newThreadName)
+        public async Task<ActionResult> ChangeThreadName(int id, [FromBody] string newThreadName)
         {
             if (string.IsNullOrEmpty(newThreadName))
             {
                 return BadRequest("Thread name can't be empty");
             }
 
-            // kolla om det är rätt författare eller admin
-            // om rätt användare, ändra om antalet meddelanden är 0
             var result = await _threadService.ChangeThreadName(id, newThreadName);
-            if (result != null)
+            if (result.success)
             {
                 return Ok(result);
             }
-            return BadRequest();
+            return BadRequest(result);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteThread(int id)
         {
