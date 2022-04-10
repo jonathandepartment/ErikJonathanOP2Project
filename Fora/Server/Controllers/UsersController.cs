@@ -1,4 +1,6 @@
 ﻿using Fora.Server.Services.UserService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fora.Server.Controllers
@@ -13,6 +15,8 @@ namespace Fora.Server.Controllers
         {
             _userService = userService;
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{username}")]
         public async Task<ActionResult> GetUser(string username)
         {
@@ -24,6 +28,7 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut]
         [Route("[action]/{username}")]
         public async Task<ActionResult> ToggleUserBan(string username)
@@ -36,16 +41,17 @@ namespace Fora.Server.Controllers
             return BadRequest(banResult.message);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{username}")]
         public async Task<ActionResult> ToggleRemoveFlag(string username)
         {
-            var banResult = await _userService.FlagUserRemoved(username);
-            if (banResult.success)
+            var flagResult = await _userService.FlagUserRemoved(username);
+            if (flagResult.success)
             {
-                return Ok(banResult);
+                return Ok(flagResult);
             }
-            return BadRequest(banResult.message);
+            return BadRequest(flagResult.message);
         }
     }
 }
