@@ -34,7 +34,7 @@ namespace Fora.Server.Controllers
             // else return badrequest
             return BadRequest();
         }
-
+        // ska tas bort?
         [HttpGet("{id}")]
         public async Task<ActionResult> CheckIfAdmin(string id)
         {

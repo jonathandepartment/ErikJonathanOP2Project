@@ -62,7 +62,7 @@ namespace Fora.Server.Services.AccountService
             if (user != null)
             {
                 // check if its the correct user changing the password
-                var currentUserName = _accessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
                 if (user.UserName == currentUserName)
                 {
                     var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
