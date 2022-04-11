@@ -6,7 +6,7 @@ namespace Fora.Server.Services.MessageService
     {
         Task<ServiceResponseModel<List<MessageViewModel>>> GetThreadMessages(int threadId);
         Task<ServiceResponseModel<string>> EditMessage(int id,string message);
-        Task<bool> DeleteMessage(int id);
-        Task<ServiceResponseModel<MessageModel>> AddMessage(int userId, int threadId, string message);
+        Task<ServiceResponseModel<string>> DeleteMessage(int id);
+        Task<ServiceResponseModel<MessageViewModel>> AddMessage(AddMessageModel message);
     }
 }

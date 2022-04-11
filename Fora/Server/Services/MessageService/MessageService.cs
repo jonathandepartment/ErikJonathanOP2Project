@@ -1,61 +1,124 @@
 ﻿using Fora.Shared.ViewModels;
+using System.Security.Claims;
 
 namespace Fora.Server.Services.MessageService
 {
     public class MessageService : IMessageService
     {
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _accessor;
 
-        public MessageService(AppDbContext context)
+        public MessageService(AppDbContext context, IHttpContextAccessor accessor)
         {
             _context = context;
+            _accessor = accessor;
         }
 
-        public Task<ServiceResponseModel<MessageModel>> AddMessage(int userId, int threadId, string message)
+        public async Task<ServiceResponseModel<MessageViewModel>> AddMessage(AddMessageModel message)
         {
-            throw new NotImplementedException();
+            ServiceResponseModel<MessageViewModel> response = new ServiceResponseModel<MessageViewModel>
+            {
+                Data = null,
+                message = "",
+                success = false
+            };
+
+            var thread = await _context.Threads.FirstOrDefaultAsync(t => t.Id == message.ThreadId);
+            if (thread != null)
+            {
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+
+                var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == currentUserName.ToLower());
+                if (userInDb != null)
+                {
+                    MessageModel messageToAdd = new();
+                    messageToAdd.UserId = userInDb.Id;
+                    messageToAdd.ThreadId = message.ThreadId;
+                    messageToAdd.Message = message.Message;
+
+                    _context.Messages.Add(messageToAdd);
+                    await _context.SaveChangesAsync();
+
+                    response.message = $"Message: {message.Message}, created";
+                    response.success = true;
+                    return response;
+                }
+
+                response.message = "No matching user found";
+                return response;
+            }
+
+            response.message = "No matching thread";
+            return response;
         }
 
-        public async Task<bool> DeleteMessage(int id)
+        public async Task<ServiceResponseModel<string>> DeleteMessage(int id)
         {
-            // if correct user or admin
+            ServiceResponseModel<string> response = new ServiceResponseModel<string>
+            {
+                Data = null,
+                message = "",
+                success = false
+            };
 
-            // remove message
             var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
             if (message != null)
             {
-                var removeResult = _context.Messages.Remove(message);
-                await _context.SaveChangesAsync();
-                return true;
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+                var currentUserRole = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+
+                var currentUserInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUserName);
+                // if correct user or admin
+                if (currentUserRole == "Admin" || currentUserInDb.Id == message.UserId)
+                {
+                    var removeResult = _context.Messages.Remove(message);
+                    await _context.SaveChangesAsync();
+
+                    response.message = "Message removed";
+                    response.success = true;
+                    return response;
+                }
+                response.message = "Invalid User";
+                return response;
             }
-            return false;
+            response.message = "No matching id";
+            return response;
         }
 
         public async Task<ServiceResponseModel<string>> EditMessage(int id, string message)
         {
-            // if correct user
+            ServiceResponseModel<string> response = new ServiceResponseModel<string>
+            {
+                Data = null,
+                message = "",
+                success = false
+            };
 
-            //edit message
             var messageToEdit = await _context.Messages.FirstOrDefaultAsync(m => m.Id == id);
             if (messageToEdit != null)
             {
-                messageToEdit.Message = message;
-                _context.Messages.Update(messageToEdit);
-                await _context.SaveChangesAsync();
+                
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+                var currentUserRole = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
 
-                return new ServiceResponseModel<string>
+                var messageAuthor = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUserName);
+                // if correct user or admin
+                if (currentUserRole == "Admin" || messageAuthor.Username == currentUserName)
                 {
-                    Data = messageToEdit.Message,
-                    success = true,
-                    message = $"Message, id: {messageToEdit.Id} edited"
-                };
+                    messageToEdit.Message = message;
+                    _context.Messages.Update(messageToEdit);
+                    await _context.SaveChangesAsync();
+
+                    response.Data = messageToEdit.Message;
+                    response.success = true;
+                    response.message = $"Message, id: {messageToEdit.Id} edited";
+                    return response;
+                }
+                response.message = "Invalid User";
+                return response;
             }
-            return new ServiceResponseModel<string>
-            {
-                Data = null,
-                success = false,
-                message = "Incorrect user or message could not be found"
-            };
+            response.message = "Message could not be found";
+            return response;
         }
 
         public async Task<ServiceResponseModel<List<MessageViewModel>>> GetThreadMessages(int threadId)
