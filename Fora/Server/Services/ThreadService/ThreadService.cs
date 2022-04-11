@@ -110,27 +110,42 @@ namespace Fora.Server.Services.ThreadService
 
         public async Task<ServiceResponseModel<ThreadModel>> DeleteThread(int id)
         {
+            ServiceResponseModel<ThreadModel> response = new ServiceResponseModel<ThreadModel>
+            {
+                Data = null,
+                message = "",
+                success = false
+            };
+
             var thread = await _context.Threads.FirstOrDefaultAsync(t => t.Id == id);
 
             if (thread != null)
             {
-                _context.Threads.Remove(thread);
-                await _context.SaveChangesAsync();
+                var threadAuthor = await _context.Users.FirstOrDefaultAsync(u => u.Id == thread.UserId);
 
-                return new ServiceResponseModel<ThreadModel>
+                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+                var currentUserRole = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+
+                // Remove if user is the author or admin
+                if (currentUserRole == "Admin" || threadAuthor.Username == currentUserName)
                 {
-                    Data = thread,
-                    message = $"{thread.Name} was deleted",
-                    success = true
-                };
+                    _context.Threads.Remove(thread);
+                    await _context.SaveChangesAsync();
+
+                    response.Data = thread;
+                    response.message = $"{thread.Name} was deleted";
+                    response.success = true;
+                    return response;
+                }
+                else
+                {
+                    response.message = "Invalid User credentials";
+                    return response;
+                }
             }
 
-            return new ServiceResponseModel<ThreadModel>
-            {
-                Data = null,
-                message = "Thread not found",
-                success = false,
-            };
+            response.message = "Thread not found";
+            return response;
         }
 
         public async Task<List<ThreadViewModel>> GetThreads(int id)

@@ -62,8 +62,6 @@ namespace Fora.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteThread(int id)
         {
-            // Ta bort om en är författaren eller admin
-
             var result = await _threadService.DeleteThread(id);
             if (result.success)
             {
