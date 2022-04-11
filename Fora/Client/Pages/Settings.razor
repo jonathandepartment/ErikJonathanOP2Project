@@ -3,14 +3,54 @@
 
 <h3>Settings</h3>
 
-<AuthorizeView Roles="Admin">
-    <h3>Admin view</h3>
-</AuthorizeView>
+@*user interests*@
+<h3>My interests</h3>
 
-<AuthorizeView Roles="Iron Man">
-    <h3>Iron Man view</h3>
+@*remove user interests*@
+@*remove interests i've created*@
+@*create new interest*@
+<h3>Create new interest</h3>
+
+@*all interests*@
+<h3>All interests</h3>
+
+@*add to user interests*@
+
+@*change password*@
+<h3>Change password</h3>
+<EditForm OnValidSubmit="ChangePassword">
+    <InputText type="password" placeholder="old password"/>
+    <InputText type="password" placeholder="new password"/>
+    <button></button>
+</EditForm>
+
+@*see own threads*@
+<h3>Threads</h3>
+
+<div>
+    @*flag as removed*@
+    <button class="btn btn-warning">Flag as removed</button>
+    @*remove user*@
+    <button class="btn btn-danger">Remove user</button>
+</div>
+<AuthorizeView Roles="Admin">
+    <h3>Admin Controls</h3>
+    @*remove interests*@
+
+    @*check if user is admin*@
+
+    @*promote to admin*@
+
+    @*demote admin*@
+
+    @*ban user*@
+
+    @*unban user*@
 </AuthorizeView>
 
 @code {
-
+    Task ChangePassword()
+    {
+        return null;
+    }
 }
