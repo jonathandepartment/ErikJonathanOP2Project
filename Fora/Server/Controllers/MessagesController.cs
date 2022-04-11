@@ -1,4 +1,6 @@
 ﻿using Fora.Server.Services.MessageService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
@@ -15,6 +17,7 @@ namespace Fora.Server.Controllers
             _messageService = messageService;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetThreadMessages(int id)
         {
@@ -26,18 +29,26 @@ namespace Fora.Server.Controllers
             return BadRequest(result);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<ActionResult> AddMessage()
+        public async Task<ActionResult> AddMessage(AddMessageModel message)
         {
-            return Ok();
+            var addResult = await _messageService.AddMessage(message);
+            if (addResult.success)
+            {
+                return Ok();
+            }
+            return BadRequest(addResult);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<ActionResult> ChangeMessage(int id, [FromBody] string value)
         {
-            
-            // get user from request
-            //var userName = User.Identity.Name;
+            if (string.IsNullOrEmpty(value))
+            {
+                return BadRequest("New message can't be empty");
+            }
             var result = await _messageService.EditMessage(id, value);
             if (result != null)
             {
@@ -46,17 +57,16 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveMessage(int id)
         {
-            // get user from request
-            //var userName = User.Identity.Name;
             var result = await _messageService.DeleteMessage(id);
-            if (result)
+            if (result.success)
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(result.message);
         }
 
     }
