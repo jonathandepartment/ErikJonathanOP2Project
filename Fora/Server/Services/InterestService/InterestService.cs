@@ -57,9 +57,14 @@
         }
 
 
-        public Task<List<InterestModel>> PutUserInterests(int Id)
+        public async Task PutUserInterests(int Id, UpdateInterestModel interest)
         {
-            throw new NotImplementedException();
+
+            var InterestToUpdate = await _context.Interests.FirstOrDefaultAsync(i => i.Id == Id);
+            InterestToUpdate.Name = interest.Name;
+            _context.Interests.Update(InterestToUpdate);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task DeleteInterest(int id)

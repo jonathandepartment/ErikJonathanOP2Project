@@ -6,6 +6,6 @@
         Task<List<UserInterestModel>> GetUserInterests(int id);
         Task PostNewInterest(AddInterestModel interest);
         Task DeleteInterest(int id);
-        Task<List<InterestModel>> PutUserInterests(int Id);
+        Task PutUserInterests(int Id, UpdateInterestModel interest);
     }
 }
