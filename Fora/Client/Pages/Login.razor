@@ -3,6 +3,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
+@inject IJSRuntime JsRuntime
 
 <h3>Login</h3>
 
@@ -42,7 +43,34 @@
             // Update state
             await AuthStateProvider.GetAuthenticationStateAsync();
 
-            NavManager.NavigateTo("/");
+            // Check if user is banned or flag for removal
+            var userInDb = await HttpClient.GetFromJsonAsync<UserModel>($"api/users/{user.Username}");
+
+            if (userInDb.Banned)
+            {
+                errorMsg = "User is banned. Contact the administrator";
+                await LocalStorage.RemoveItemAsync("token");
+                await AuthStateProvider.GetAuthenticationStateAsync();
+            }
+            else if (userInDb.Deleted)
+            {
+                bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Revive account?");
+                if (confirmed)
+                {
+                    await HttpClient.PutAsync($"api/users/toggleremoveflag/{user.Username}", null);
+                    NavManager.NavigateTo("/");
+                }
+                else
+                {
+                    await LocalStorage.RemoveItemAsync("token");
+                    await AuthStateProvider.GetAuthenticationStateAsync();
+                }
+            }
+            else
+            {
+                NavManager.NavigateTo("/");
+            }
+
         }
         else
         {
