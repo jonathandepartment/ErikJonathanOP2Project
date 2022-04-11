@@ -2,6 +2,7 @@
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
+@inject NavigationManager NavManager
 
 <h3>Login</h3>
 
@@ -16,21 +17,36 @@
     <ValidationSummary />
 </EditForm>
 
+@if (!string.IsNullOrEmpty(errorMsg))
+{
+    <p class="text-warning">@errorMsg</p>
+}
+
 @code {
     UserDTO user = new();
+    string errorMsg = null;
 
     async Task HandleLogin()
     {
         // Call api
         var result = await HttpClient.PostAsJsonAsync("api/account/login", user);
 
-        // Read the token
-        var token = await result.Content.ReadAsStringAsync();
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            // Read the token
+            var token = await result.Content.ReadAsStringAsync();
 
-        // Save token in storage
-        await LocalStorage.SetItemAsync("token", token);
+            // Save token in storage
+            await LocalStorage.SetItemAsync("token", token);
 
-        // Update state
-        await AuthStateProvider.GetAuthenticationStateAsync();
+            // Update state
+            await AuthStateProvider.GetAuthenticationStateAsync();
+
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            errorMsg = await result.Content.ReadAsStringAsync();
+        }
     }
 }
