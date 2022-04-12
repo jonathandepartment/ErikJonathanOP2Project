@@ -4,8 +4,9 @@
     {
         Task<List<InterestModel>> GetInterests();
         Task<List<UserInterestModel>> GetUserInterests(int id);
-        Task PostNewInterest(AddInterestModel interest);
-        Task DeleteInterest(int id);
-        Task PutUserInterests(int Id, UpdateInterestModel interest);
+        Task<bool> PostNewInterest(AddInterestModel interest);
+        Task<bool> DeleteInterest(int id);
+        Task<bool> PutUserInterests(int Id, UpdateInterestModel interest);
+        Task<bool> AddUserInterest(int id);
     }
 }
