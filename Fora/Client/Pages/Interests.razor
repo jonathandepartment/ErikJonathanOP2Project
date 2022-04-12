@@ -1,0 +1,65 @@
+﻿@page "/interests"
+@inject HttpClient HttpClient
+@using Newtonsoft.Json
+
+<PageTitle>Interests</PageTitle>
+
+
+<h3>Interests</h3>
+
+@*@if(AllInterests != null)
+{
+    @foreach(var interest in AllInterests)
+    {
+        @if(!String.IsNullOrEmpty(interest.Name))
+        {
+             <p class="text-danger box">@interest.Name</p>
+
+        }
+    }
+}*@
+
+@if(AllInterests != null)
+{
+    @foreach(var interest in AllInterests)
+    {
+        @if(!String.IsNullOrEmpty(interest.Name))
+        {
+             <div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
+            <div class="row align-items-center">
+              <div class="col-md-8 mb-3 mb-sm-0">
+                <h5>
+                  <a href="#" class="text-primary">@interest.Name</a>
+                </h5>
+              </div>
+              <div class="col-md-4 op-7">
+                <div class="row text-center op-7">
+                  <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
+                  <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
+                  <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <a class="btn btn-primary" href="editinterest" role="button">Edit</a> </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        }
+    }
+}
+
+
+
+
+
+@code {
+    public List<InterestModel>? AllInterests { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Hämta intressen från databasen (via API)
+        var response = await HttpClient.GetAsync("api/interests");
+
+        var result = await response.Content.ReadAsStringAsync();
+
+        AllInterests = JsonConvert.DeserializeObject<List<InterestModel>>(result);
+    }
+}
