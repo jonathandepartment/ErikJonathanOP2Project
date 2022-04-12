@@ -174,6 +174,7 @@ namespace Fora.Server.Services.AccountService
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.UserData, user.Id)
             };
 
             if (admin)
