@@ -56,6 +56,19 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [HttpPost]
+        [Route("{id}")]
+        public async Task<ActionResult> AddUserInterest(int id)
+        {
+
+            if (id != null)
+            {
+                await _interestService.AddUserInterest(id);
+                return Ok("User interest list updated");
+            }
+            return BadRequest();
+        }
+
 
         [HttpDelete]
         [Route("{id}")]
@@ -70,8 +83,13 @@ namespace Fora.Server.Controllers
         [Route("{id:int}")]
         public async Task<ActionResult<InterestModel>> PutUserInterests(int Id, UpdateInterestModel interest)
         {
-            await _interestService.PutUserInterests(Id, interest);
-            return Ok("Interest updated");
+            var putResult = await _interestService.PutUserInterests(Id, interest);
+            if (putResult)
+            {
+                return Ok("Interest updated");
+            }
+            else
+            { return BadRequest(); }
         }
     }
 }
