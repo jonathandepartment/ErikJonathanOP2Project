@@ -80,9 +80,17 @@
 
     async Task RemoveUser(string userId)
     {
+
         await HttpClient.DeleteAsync($"api/users/{userId}");
         await LocalStorage.RemoveItemAsync("token");
-        await AuthStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        foreach(var claim in authState.User.Claims)
+        {
+            var t = claim.Type;
+            var v = claim.Value;
+        }
+
         NavManager.NavigateTo("/signup");
     }
 }
