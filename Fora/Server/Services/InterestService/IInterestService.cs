@@ -1,12 +1,16 @@
-﻿namespace Fora.Server.Services.InterestService
+﻿using Fora.Shared.ViewModels;
+
+namespace Fora.Server.Services.InterestService
 {
     public interface IInterestService
     {
-        Task<List<InterestModel>> GetInterests();
-        Task<List<UserInterestModel>> GetUserInterests(int id);
+        Task<InterestModel> GetInterest(int id);
+        Task<List<InterestViewModel>> GetInterests();
+        Task<List<InterestViewModel>> GetUserInterests();
         Task<bool> PostNewInterest(AddInterestModel interest);
         Task<bool> DeleteInterest(int id);
         Task<bool> PutUserInterests(int Id, UpdateInterestModel interest);
         Task<bool> AddUserInterest(int id);
+        Task<bool> AddUserInterests(List<int> id);
     }
 }
