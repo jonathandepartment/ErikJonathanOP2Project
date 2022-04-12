@@ -44,7 +44,7 @@ namespace Fora.Server.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        [Route("[action]/{id}")]
+        [Route("[action]")]
         public async Task<ActionResult> GetUserInterests()
         {
             // Call service
@@ -113,13 +113,12 @@ namespace Fora.Server.Controllers
             return Ok("Interest removed");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
-        [Route("{id:int}")]
-        public async Task<ActionResult<InterestModel>> PutUserInterests(int Id, UpdateInterestModel interest)
+        [Route("{id}")]
+        public async Task<ActionResult<InterestModel>> ChangeInterestName(int Id, UpdateInterestModel interest)
         {
-            // kolla om rätt användare eller admin
-            // ändra om trådantalet är 0
-            var putResult = await _interestService.PutUserInterests(Id, interest);
+            var putResult = await _interestService.ChangeInterestName(Id, interest);
             if (putResult)
             {
                 return Ok("Interest updated");

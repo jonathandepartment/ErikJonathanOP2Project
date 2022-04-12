@@ -110,18 +110,29 @@ namespace Fora.Server.Services.InterestService
         }
 
 
-        public async Task<bool> PutUserInterests(int Id, UpdateInterestModel interest)
+        public async Task<bool> ChangeInterestName(int Id, UpdateInterestModel interest)
         {
-
-            var interestToUpdate = await _context.Interests.FirstOrDefaultAsync(i => i.Id == Id);
+            var interestToUpdate = await _context.Interests
+                .Include(i => i.Threads)
+                .FirstOrDefaultAsync(i => i.Id == Id);
 
             if (interestToUpdate != null)
             {
-                // Kolla så att korrekt användare eller admin försöker uppdatera intresset
-                interestToUpdate.Name = interest.Name;
-                _context.Interests.Update(interestToUpdate);
-                await _context.SaveChangesAsync();
-                return true;
+                if (interestToUpdate.Threads.Count < 1)
+                {
+                    var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+                    var currentUserRole = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+
+                    var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Id == interestToUpdate.UserId);
+
+                    if (currentUserRole == "Admin" || currentUsername == userInDb.Username)
+                    {
+                        interestToUpdate.Name = interest.Name;
+                        _context.Interests.Update(interestToUpdate);
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                }
             }
             return false;
         }

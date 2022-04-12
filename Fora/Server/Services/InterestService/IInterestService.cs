@@ -9,7 +9,7 @@ namespace Fora.Server.Services.InterestService
         Task<List<InterestViewModel>> GetUserInterests();
         Task<bool> PostNewInterest(AddInterestModel interest);
         Task<bool> DeleteInterest(int id);
-        Task<bool> PutUserInterests(int Id, UpdateInterestModel interest);
+        Task<bool> ChangeInterestName(int Id, UpdateInterestModel interest);
         Task<bool> AddUserInterest(int id);
         Task<bool> AddUserInterests(List<int> id);
     }
