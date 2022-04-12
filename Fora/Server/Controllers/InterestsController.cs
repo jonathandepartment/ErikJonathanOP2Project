@@ -103,14 +103,17 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult<InterestModel>> DeleteInterest(int id)
         {
-            // kolla om rätt användare eller admin
-            await _interestService.DeleteInterest(id);
-            return Ok("Interest removed");
+            var deleteResult = await _interestService.DeleteInterest(id);
+            if (deleteResult)
+            {
+                return Ok("Interest removed");
+            }
+            return BadRequest("Invalid credentials");
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

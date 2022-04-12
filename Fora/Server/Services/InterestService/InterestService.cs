@@ -142,9 +142,17 @@ namespace Fora.Server.Services.InterestService
             var interestToDelete = await _context.Interests.FirstOrDefaultAsync(i => i.Id == id);
             if (interestToDelete != null)
             {
-                _context.Interests.Remove(interestToDelete);
-                await _context.SaveChangesAsync();
-                return true;
+                var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+                var currentUserRole = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+
+                var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+
+                if (currentUserRole == "Admin" || interestToDelete.UserId == userInDb.Id)
+                {
+                    _context.Interests.Remove(interestToDelete);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
             }
             return false;
 
