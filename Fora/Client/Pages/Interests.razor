@@ -1,5 +1,6 @@
 ﻿@page "/interests"
 @inject HttpClient HttpClient
+@using Fora.Shared.ViewModels
 @using Newtonsoft.Json
 
 <PageTitle>Interests</PageTitle>
@@ -19,29 +20,36 @@
     }
 }*@
 
+@*<h5>
+<a href="#" class="text-primary">@interest.Name</a>
+<a href="#" class="font-weight-light">Number of threads: @interest.ThreadCount</a>
+</h5>*@
+
 @if(AllInterests != null)
 {
     @foreach(var interest in AllInterests)
     {
         @if(!String.IsNullOrEmpty(interest.Name))
         {
-             <div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
-            <div class="row align-items-center">
-              <div class="col-md-8 mb-3 mb-sm-0">
-                <h5>
-                  <a href="#" class="text-primary">@interest.Name</a>
-                </h5>
-              </div>
-              <div class="col-md-4 op-7">
-                <div class="row text-center op-7">
-                  <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                  <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                  <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <a class="btn btn-primary" href="editinterest" role="button">Edit</a> </div>
+            <div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
+                <div class="row align-items-center">
+                  <div class="col-md-8 mb-3 mb-sm-0">
+                    <h5>
+                      <a href="#" class="text-primary">@interest.Name</a>
+                    </h5>
+                    <div class="text-sm op-5"> <a class="text-black mr-2" href="#">Threads: @interest.ThreadCount</a></div>
+                  </div>
+                  <div class="col-md-4 op-7">
+                    <div class="row text-center op-7">
+                      <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
+                      <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
+                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <a class="btn btn-primary" href="editinterest" role="button">Link</a> </div>
+@*                      <button @onclick="GreetMe">Click me!</button>
+                      @Message*@
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
         }
     }
 }
@@ -50,8 +58,10 @@
 
 
 
+
+
 @code {
-    public List<InterestModel>? AllInterests { get; set; }
+    public List<InterestViewModel>? AllInterests { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,6 +70,13 @@
 
         var result = await response.Content.ReadAsStringAsync();
 
-        AllInterests = JsonConvert.DeserializeObject<List<InterestModel>>(result);
+        AllInterests = JsonConvert.DeserializeObject<List<InterestViewModel>>(result);
     }
+
+    //string Message { get; set; }
+
+    //void GreetMe()
+    //{
+    //    Message = "Hello";
+    //}  
 }
