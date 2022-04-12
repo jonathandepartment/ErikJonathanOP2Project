@@ -1,0 +1,46 @@
+﻿@page "/pickinterests"
+@using System.ComponentModel.DataAnnotations
+
+<h3 class="display-3">PickInterests</h3>
+
+<h4>Available Interests</h4>
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+ 
+    <h5>Select interests (Minimum: 1, Maximum: 5)</h5>
+    <div>
+        <InputSelect @bind-Value="color.SelectedColors">
+            <option value="white">White</option>
+            <option value="red">Red</option>
+            <option value="yellow">Yellow</option>
+            <option value="blue">Blue</option>
+            <option value="black">Black</option>
+        </InputSelect>
+    </div>
+    <button class="btn btn-primary" type="submit">Submit</button>
+</EditForm>
+
+@code {
+    EditContext editContext;
+    private Color color = new();
+ 
+    protected override void OnInitialized()
+    {
+        editContext = new(color);
+    }
+    private void HandleValidSubmit()
+    {
+        // logic for saving form data
+    }
+
+    public class Color
+{
+	public Color()
+	{
+		SelectedColors = new string[]{};
+	}
+	[Required, MinLength(1), MaxLength(5)]
+	public string[] SelectedColors { get; set; }
+}
+}
