@@ -1,4 +1,5 @@
-﻿using Fora.Shared.ViewModels;
+﻿using Fora.Shared.DTO;
+using Fora.Shared.ViewModels;
 using System.Net.Http.Json;
 
 namespace Fora.Client.Services.InterestService
@@ -12,11 +13,18 @@ namespace Fora.Client.Services.InterestService
             _httpClient = httpClient;
         }
 
+        public async Task AddInitialInterests(AddInitialInterests initialInterests)
+        {
+            await _httpClient.PostAsJsonAsync<AddInitialInterests>("api/interests/AddUserInterests", initialInterests);
+        }
+
         public async Task<List<InterestViewModel>> GetAllInterests()
         {
             var response = await _httpClient.GetFromJsonAsync<List<InterestViewModel>>("api/interests");
 
             return response;
         }
+
+        
     }
 }
