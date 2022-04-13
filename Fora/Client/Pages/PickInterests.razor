@@ -1,7 +1,10 @@
 ﻿@page "/pickinterests"
 @using Fora.Shared.DTO
 @using Fora.Shared.ViewModels
+@using System.ComponentModel.DataAnnotations
 @inject IInterestService InterestService
+@inject NavigationManager NavigationManager
+
 <h3 class="display-3">PickInterests</h3>
 
 <h4>Available Interests</h4>
@@ -11,7 +14,7 @@
  
     <h5>Select interests (Minimum: 1, Maximum: 5)</h5>
     <div>
-        <select multiple @bind="initialInterests" style="height: 150px; width: 200px;">
+        <select class="form-select" size="10" multiple @bind="initialInterests">
             @foreach (var interest in options)
             {
                 <option value="@interest.Id">@interest.Name</option>
@@ -22,7 +25,8 @@
 </EditForm>
 
 @code {
-    int[] initialInterests { get; set; } = new int[] { };
+    [Required, MinLength(1), MaxLength(5)]
+    int[] initialInterests { get; set; } = new int[]{};
 
     List<InterestViewModel> options = new();
 
@@ -30,12 +34,14 @@
     {
         options = await InterestService.GetAllInterests();
     }
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         AddInitialInterests initInterestModel = new();
+        initInterestModel.InterestIds = new();
         initInterestModel.InterestIds.AddRange(initialInterests);
-
-        var result = "hello";
         // logic for saving form data
+        await InterestService.AddInitialInterests(initInterestModel);
+
+        NavigationManager.NavigateTo("/");
     }
 }
