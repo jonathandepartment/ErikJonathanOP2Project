@@ -179,9 +179,42 @@ namespace Fora.Server.Services.InterestService
             return false;
         }
 
-        public Task<bool> AddUserInterests(List<int> id)
+        public async Task<bool> AddUserInterests(List<int> interestsToAdd)
         {
-            throw new NotImplementedException();
+            // hämta användare
+            var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+            var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+
+            // hämta intressen med matchande ids
+            var interests = await _context.Interests.Where(i => interestsToAdd.Contains(i.Id))
+                .ToListAsync();
+
+            if (interests != null)
+            {
+                List<UserInterestModel> userInterests = new();
+
+                foreach (var i in interests)
+                {
+                    if (i != null)
+                    {
+                        userInterests.Add(new UserInterestModel
+                        {
+                            UserId = userInDb.Id,
+                            InterestId = i.Id
+                        });
+                    }
+                }
+
+                if (userInterests.Count > 0)
+                {
+                    _context.UserInterests.AddRange(userInterests);
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+            }
+            // lägg intressen till userinterests
+            return false;
         }
     }
 }
