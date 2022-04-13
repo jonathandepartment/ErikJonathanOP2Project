@@ -17,6 +17,18 @@ namespace Fora.Server.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
+        public async Task<ActionResult> GetMyThreads()
+        {
+            var result = await _threadService.GetMyThreads();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetThreadsByInterest(int id)
         {

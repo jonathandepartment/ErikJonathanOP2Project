@@ -162,6 +162,23 @@ namespace Fora.Server.Services.ThreadService
             return null;
         }
 
+        public async Task<List<ThreadViewModel>> GetMyThreads()
+        {
+            var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+            var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+
+            var threads = await _context.Threads
+                .Include(t => t.Messages)
+                .Where(t => t.UserId == userInDb.Id)
+                .ToListAsync();
+
+            if (threads != null)
+            {
+                return ConvertToVmList(threads);
+            }
+            return null;
+        }
+
         private List<ThreadViewModel> ConvertToVmList(List<ThreadModel> threads)
         {
             List<ThreadViewModel> threadsVmList = new();

@@ -1,8 +1,8 @@
 ﻿@page "/settings"
+@using Fora.Shared.ViewModels
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
-@inject HttpClient HttpClient
 @inject NavigationManager NavManager
 
 <h2 class="display-2">Settings </h2>
@@ -71,7 +71,13 @@
 </AuthorizeView>
 
 @code {
+    List<InterestViewModel> MyInterests { get; set; }
     ChangePasswordModel Password = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        MyInterests = 
+    }
 
     Task ChangePassword()
     {
