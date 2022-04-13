@@ -36,7 +36,7 @@
                 <div class="row align-items-center">
                   <div class="col-md-8 mb-3 mb-sm-0">
                     <h5>
-                      <a href="#" class="text-primary">@interest.Name</a>
+                      <a href="#" class="text-primary" @onclick="@(() => NavigateToThreads(interest.Id))">@interest.Name</a>
                     </h5>
                     <div class="text-sm op-5"> <a class="text-black mr-2" href="#">Threads: @interest.ThreadCount</a></div>
                   </div>
@@ -75,5 +75,10 @@
     private void Navigate(int id)
     {
         navigationmanager.NavigateTo($"/editinterest/{id}");
+    }
+
+    private void NavigateToThreads(int id)
+    {
+        navigationmanager.NavigateTo($"/interestthreads/{id}");
     }
 }

@@ -26,7 +26,7 @@
 @code {
     [Parameter]
     public int Id { get; set; }
-    private InterestModel interest;
+    private InterestModel interest = new();
 
     protected override async Task OnParametersSetAsync()
     {
