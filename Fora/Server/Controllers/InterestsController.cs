@@ -87,20 +87,21 @@ namespace Fora.Server.Controllers
             return BadRequest();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("[action]")]
-        public async Task<ActionResult> AddUserInterests(List<int> interestsToAdd)
+        public async Task<ActionResult> AddUserInterests([FromBody] AddInitialInterests initialInterests)
         {
-            if (interestsToAdd != null || interestsToAdd.Count > 0)
+            if (initialInterests != null || initialInterests.InterestIds.Count > 0)
             {
-                var result = await _interestService.AddUserInterests(interestsToAdd);
+                var result = await _interestService.AddUserInterests(initialInterests.InterestIds);
                 if (result)
                 {
-                    return Ok();
+                    return Ok("Interests added");
                 }
-                return BadRequest("");
+                return BadRequest("Adding interests failed");
             }
-            return BadRequest();
+            return BadRequest("Request was empty");
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
