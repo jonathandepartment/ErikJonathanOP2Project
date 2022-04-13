@@ -1,9 +1,27 @@
 ﻿@page "/editinterest/{Id:int}"
 @inject HttpClient HttpClient
 
-<h3>EditInterest</h3>
+<h1>Editing @interest.Name</h1>
 
-<h1>Displaying @interest.Name</h1>
+<div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
+                <div class="row align-items-center">
+                  <div class="col-md-8 mb-3 mb-sm-0">
+                    <h5>
+                      <a class="text-primary">Change interest name:</a>
+                      <P></P>
+                      <input type="Text">
+                      <P></P>
+                      <input type="Submit" class="btn btn-primary" value="Change name" />
+                    </h5>
+                    <div class="text-sm op-5"> <a class="text-black mr-2" href="#"></a></div>
+                  </div>
+                  <div class="col-md-4 op-7">
+                    <div class="row text-center op-7">
+                      <div class="col px-1"><button type="button" class="btn btn-danger">Delete</button> </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
 @code {
     [Parameter]
