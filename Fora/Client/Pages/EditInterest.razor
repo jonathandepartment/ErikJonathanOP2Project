@@ -1,8 +1,24 @@
-﻿@page "/editinterest"
+﻿@page "/editinterest/{Id:int}"
 @inject HttpClient HttpClient
 
 <h3>EditInterest</h3>
 
-@code {
+<h1>Displaying @interest.Name</h1>
 
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private InterestModel interest;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Hämta ett intresse från servern med det specifika Idt 
+
+        var result = await HttpClient.GetFromJsonAsync<InterestModel>($"/api/interests/{Id}");
+
+        if(result != null)
+        {
+            interest = result;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/interests"
 @inject HttpClient HttpClient
+@inject NavigationManager navigationmanager
 @using Fora.Shared.ViewModels
 @using Newtonsoft.Json
 
@@ -43,9 +44,7 @@
                     <div class="row text-center op-7">
                       <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
                       <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <a class="btn btn-primary" href="editinterest" role="button">Link</a> </div>
-@*                      <button @onclick="GreetMe">Click me!</button>
-                      @Message*@
+                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <button type="button" class="btn btn-primary" @onclick="@(() => Navigate(interest.Id))">Edit</button> </div>
                     </div>
                   </div>
                 </div>
@@ -73,10 +72,8 @@
         AllInterests = JsonConvert.DeserializeObject<List<InterestViewModel>>(result);
     }
 
-    //string Message { get; set; }
-
-    //void GreetMe()
-    //{
-    //    Message = "Hello";
-    //}  
+    private void Navigate(int id)
+    {
+        navigationmanager.NavigateTo($"/editinterest/{id}");
+    }
 }
