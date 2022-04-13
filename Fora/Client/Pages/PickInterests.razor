@@ -1,46 +1,41 @@
 ﻿@page "/pickinterests"
-@using System.ComponentModel.DataAnnotations
-
+@using Fora.Shared.DTO
+@using Fora.Shared.ViewModels
+@inject IInterestService InterestService
 <h3 class="display-3">PickInterests</h3>
 
 <h4>Available Interests</h4>
-<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="initialInterests" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
  
     <h5>Select interests (Minimum: 1, Maximum: 5)</h5>
     <div>
-        <InputSelect @bind-Value="color.SelectedColors">
-            <option value="white">White</option>
-            <option value="red">Red</option>
-            <option value="yellow">Yellow</option>
-            <option value="blue">Blue</option>
-            <option value="black">Black</option>
-        </InputSelect>
+        <select multiple @bind="initialInterests" style="height: 150px; width: 200px;">
+            @foreach (var interest in options)
+            {
+                <option value="@interest.Id">@interest.Name</option>
+            }
+        </select>
     </div>
     <button class="btn btn-primary" type="submit">Submit</button>
 </EditForm>
 
 @code {
-    EditContext editContext;
-    private Color color = new();
- 
-    protected override void OnInitialized()
+    int[] initialInterests { get; set; } = new int[] { };
+
+    List<InterestViewModel> options = new();
+
+    protected async override Task OnInitializedAsync()
     {
-        editContext = new(color);
+        options = await InterestService.GetAllInterests();
     }
     private void HandleValidSubmit()
     {
+        AddInitialInterests initInterestModel = new();
+        initInterestModel.InterestIds.AddRange(initialInterests);
+
+        var result = "hello";
         // logic for saving form data
     }
-
-    public class Color
-{
-	public Color()
-	{
-		SelectedColors = new string[]{};
-	}
-	[Required, MinLength(1), MaxLength(5)]
-	public string[] SelectedColors { get; set; }
-}
 }
