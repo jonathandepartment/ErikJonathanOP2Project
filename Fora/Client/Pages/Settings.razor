@@ -4,28 +4,49 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavManager
+@inject ISettingsService SettingsService
 
 <h2 class="display-2">Settings </h2>
 @*user interests*@
 <div class="row">
     <div class="col-8">
         <h3>My interests</h3>
+        @if (MyInterests != null)
+        {
+            <ul class="list-group">
+            @foreach (var interest in MyInterests)
+            {
+                <li class="list-group-item w-75">
+                    @interest.Name
+                    <button class="btn btn-sm btn-danger float-end">Remove</button>
+                </li>
+            }
+            </ul>
+        }
         @*remove user interests*@
         @*remove interests i've created*@
     </div>
     <div class="col-4">
         @*create new interest*@
         <h3>Add a new interest</h3>
-        <EditForm>
+        <form>
+            <input type="text" placeholder="new interest name"/>
+            <button type="submit" class="btn btn-sm btn-success">Add interest</button>
+        </form>
+        @*<EditForm>
             <InputText type="text" />
             <button class="btn btn-sm btn-success">Add</button>
-        </EditForm>
+        </EditForm>*@
     </div>
 </div>
 
 @*all interests*@
 <div class="row">
     <h3>All interests</h3>
+    @if (AllInterests != null)
+    {
+        
+    }
     @*add to user interests*@
 </div>
 
@@ -72,11 +93,13 @@
 
 @code {
     List<InterestViewModel> MyInterests { get; set; }
+    List<InterestViewModel> AllInterests { get; set; }
     ChangePasswordModel Password = new();
 
     protected async override Task OnInitializedAsync()
     {
-        MyInterests = 
+        MyInterests = await SettingsService.GetMyInterests();
+        AllInterests = await SettingsService.GetAllInterests();
     }
 
     Task ChangePassword()
@@ -87,7 +110,7 @@
     async Task RemoveUser(string userId)
     {
 
-        await HttpClient.DeleteAsync($"api/users/{userId}");
+        //await HttpClient.DeleteAsync($"api/users/{userId}");
         await LocalStorage.RemoveItemAsync("token");
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 

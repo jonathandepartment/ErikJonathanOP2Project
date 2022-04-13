@@ -41,9 +41,14 @@ namespace Fora.Client.Services.SettingsService
             throw new NotImplementedException();
         }
 
-        public Task<List<InterestViewModel>> GetAllInterests()
+        public async Task<List<InterestViewModel>> GetAllInterests()
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<InterestViewModel>>("/api/interests");
+            if (response != null)
+            {
+                return response;
+            }
+            return new List<InterestViewModel>();
         }
 
         public async Task<List<InterestViewModel>> GetMyInterests()

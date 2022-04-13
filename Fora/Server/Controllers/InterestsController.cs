@@ -92,7 +92,7 @@ namespace Fora.Server.Controllers
         [Route("[action]")]
         public async Task<ActionResult> AddUserInterests([FromBody] AddInitialInterests initialInterests)
         {
-            if (initialInterests != null || initialInterests.InterestIds.Count > 0)
+            if (initialInterests != null)
             {
                 var result = await _interestService.AddUserInterests(initialInterests.InterestIds);
                 if (result)
