@@ -185,6 +185,16 @@ namespace Fora.Server.Services.InterestService
             var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
             var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
 
+            if (interestsToAdd.Count == 0)
+            {
+                // if choices is blank, add standard interests
+                var standardInterests = await _context.Interests
+                    .Select(i => i.Id)
+                    .ToListAsync();
+
+                
+                //interestsToAdd.AddRange();
+            }
             // hämta intressen med matchande ids
             var interests = await _context.Interests.Where(i => interestsToAdd.Contains(i.Id))
                 .ToListAsync();
