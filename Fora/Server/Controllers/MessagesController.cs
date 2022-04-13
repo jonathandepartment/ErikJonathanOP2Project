@@ -50,11 +50,11 @@ namespace Fora.Server.Controllers
                 return BadRequest("New message can't be empty");
             }
             var result = await _messageService.EditMessage(id, value);
-            if (result != null)
+            if (result.success)
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(result.message);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
