@@ -35,6 +35,7 @@ namespace Fora.Server.Services.MessageService
                     messageToAdd.UserId = userInDb.Id;
                     messageToAdd.ThreadId = message.ThreadId;
                     messageToAdd.Message = message.Message;
+                    messageToAdd.Created = DateTime.Now;
 
                     _context.Messages.Add(messageToAdd);
                     await _context.SaveChangesAsync();
@@ -71,7 +72,9 @@ namespace Fora.Server.Services.MessageService
                 // if correct user or admin
                 if (currentUserRole == "Admin" || currentUserInDb.Id == message.UserId)
                 {
-                    var removeResult = _context.Messages.Remove(message);
+                    // toggle removed
+                    message.Deleted = true;
+                    var removeResult = _context.Messages.Update(message);
                     await _context.SaveChangesAsync();
 
                     response.message = "Message removed";
@@ -103,9 +106,10 @@ namespace Fora.Server.Services.MessageService
 
                 var messageAuthor = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUserName);
                 // if correct user or admin
-                if (currentUserRole == "Admin" || messageAuthor.Username == currentUserName)
+                if (currentUserRole == "Admin" || messageAuthor.Id == messageToEdit.UserId)
                 {
                     messageToEdit.Message = message;
+                    messageToEdit.Edited = true;
                     _context.Messages.Update(messageToEdit);
                     await _context.SaveChangesAsync();
 
