@@ -1,10 +1,12 @@
 ﻿@page "/signup"
 @inject HttpClient HttpClient
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
 
 <h3>SignUp</h3>
 
-<EditForm Model="user" OnValidSubmit="HandleLogin">
+<EditForm Model="user" OnValidSubmit="HandleSignup">
     <DataAnnotationsValidator />
     <div class="form-group">
         <label for="username">Username</label>
@@ -22,19 +24,33 @@
         <label for="verifypassword">Verify Password</label>
         <InputText id="verifypassword" @bind-Value="user.VerifyPassword" type="password" />
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary">Sign up</button>
     <ValidationSummary />
 </EditForm>
 
 @code {
     SignUpModel user = new();
 
-    async Task HandleLogin()
+    async Task HandleSignup()
     {
         var result = await HttpClient.PostAsJsonAsync("/api/account", user);
 
         if (result.IsSuccessStatusCode)
         {
+            UserDTO newUser = new();
+            newUser.Username = user.Username;
+            newUser.Password = user.Password;
+
+            var loginResult = await HttpClient.PostAsJsonAsync("/api/account/login", newUser);
+
+            // Read the token
+            var token = await loginResult.Content.ReadAsStringAsync();
+
+            // Save token in storage
+            await LocalStorage.SetItemAsync("token", token);
+
+            // Update state
+            await AuthStateProvider.GetAuthenticationStateAsync();
             NavManager.NavigateTo("pickinterests");
         }
     }
