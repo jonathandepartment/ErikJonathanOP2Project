@@ -1,6 +1,6 @@
 ﻿@page "/interests"
-@inject HttpClient HttpClient
 @inject NavigationManager navigationmanager
+@inject IInterestService interestService
 @using Fora.Shared.ViewModels
 @using Newtonsoft.Json
 
@@ -36,15 +36,15 @@
                 <div class="row align-items-center">
                   <div class="col-md-8 mb-3 mb-sm-0">
                     <h5>
-                      <a href="#" class="text-primary" @onclick="@(() => NavigateToThreads(interest.Id))">@interest.Name</a>
+                      <a class="text-primary" @onclick="@(() => NavigateToThreads(interest.Id))">@interest.Name</a>
                     </h5>
-                    <div class="text-sm op-5"> <a class="text-black mr-2" href="#">Threads: @interest.ThreadCount</a></div>
+                    <div class="text-sm op-5"> <a class="text-black mr-2">Threads: @interest.ThreadCount</a></div>
                   </div>
                   <div class="col-md-4 op-7">
                     <div class="row text-center op-7">
                       <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
                       <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <button type="button" class="btn btn-primary" @onclick="@(() => Navigate(interest.Id))">Edit</button> </div>
+                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToEdit(interest.Id))">Edit</button> </div>
                     </div>
                   </div>
                 </div>
@@ -60,19 +60,22 @@
 
 
 @code {
+
+
     public List<InterestViewModel>? AllInterests { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         // Hämta intressen från databasen (via API)
-        var response = await HttpClient.GetAsync("api/interests");
+        //var response = await HttpClient.GetAsync("api/interests");
 
-        var result = await response.Content.ReadAsStringAsync();
+        //var result = await response.Content.ReadAsStringAsync();
 
-        AllInterests = JsonConvert.DeserializeObject<List<InterestViewModel>>(result);
+        //AllInterests = JsonConvert.DeserializeObject<List<InterestViewModel>>(result);
+        AllInterests = await interestService.GetAllInterests();
     }
 
-    private void Navigate(int id)
+    private void NavigateToEdit(int id)
     {
         navigationmanager.NavigateTo($"/editinterest/{id}");
     }
