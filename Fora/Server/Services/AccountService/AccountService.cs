@@ -56,20 +56,18 @@ namespace Fora.Server.Services.AccountService
             return string.Join("\n", errorMsgs);
         }
 
-        public async Task<bool> ChangePassword(string id, string oldPassword, string newPassword)
+        public async Task<bool> ChangePassword(string oldPassword, string newPassword)
         {
-            var user = await _signInManager.UserManager.FindByIdAsync(id);
-            if (user != null)
+            // get user
+            var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
+            var userInDb = await _signInManager.UserManager.FindByNameAsync(currentUserName);
+            
+            if (userInDb != null)
             {
-                // check if its the correct user changing the password
-                var currentUserName = _accessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Name);
-                if (user.UserName == currentUserName)
+                var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(userInDb, oldPassword, newPassword);
+                if (changePasswordResult.Succeeded)
                 {
-                    var changePasswordResult = await _signInManager.UserManager.ChangePasswordAsync(user, oldPassword, newPassword);
-                    if (changePasswordResult.Succeeded)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

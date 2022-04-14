@@ -13,7 +13,7 @@ namespace Fora.Client.Services.SettingsService
         Task AddNewUserInterest(int id);
         Task RemoveUserInterest(int id);
         Task RemoveInterest(int id);
-        Task ChangePassword();
+        Task ChangePassword(ChangePasswordModel password);
         Task MakeAdmin();
         Task RemoveAdmin();
         Task BanUser();

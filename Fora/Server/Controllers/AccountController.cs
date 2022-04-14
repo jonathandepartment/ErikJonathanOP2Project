@@ -88,10 +88,10 @@ namespace Fora.Server.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut("{id}")]
-        public async Task<ActionResult> ChangePassword([FromRoute] string id, ChangePasswordModel model)
+        [HttpPut]
+        public async Task<ActionResult> ChangePassword(ChangePasswordModel model)
         {
-            var passwordChangeResult = await _accountService.ChangePassword(id, model.OldPassword, model.NewPassword);
+            var passwordChangeResult = await _accountService.ChangePassword(model.OldPassword, model.NewPassword);
             if (passwordChangeResult)
             {
                 return Ok("Password was changed");

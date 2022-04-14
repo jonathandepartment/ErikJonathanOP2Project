@@ -7,7 +7,7 @@
         Task<List<ApplicationUser>> GetUsers();
         Task<bool> DeleteUser(string id);
         Task<bool> CheckIfAdmin(string id);
-        Task<bool> ChangePassword(string id, string oldPassword, string newPassword);
+        Task<bool> ChangePassword(string oldPassword, string newPassword);
         Task<bool> MakeAdmin(string id);
         Task<bool> RemoveAdmin(string id);
     }
