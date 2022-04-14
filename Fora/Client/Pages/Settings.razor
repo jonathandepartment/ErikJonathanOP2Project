@@ -6,70 +6,91 @@
 @inject NavigationManager NavManager
 @inject ISettingsService SettingsService
 
+<PageTitle>Settings</PageTitle>
+
 <h2 class="display-2">Settings </h2>
+
 @*user interests*@
 <div class="row">
-    <div class="col-8">
-        <h3>My interests</h3>
-        @if (MyInterests != null)
-        {
-            <ul class="list-group">
-            @foreach (var interest in MyInterests)
+    <TogglableComponent Title="My Interests">
+        <div class="col-8">
+            @if (MyInterests != null)
             {
-                <li class="list-group-item w-75">
-                    @interest.Name
-                    <button class="btn btn-sm btn-danger float-end">Remove</button>
-                </li>
+                <ul class="list-group">
+                    @foreach (var interest in MyInterests)
+                    {
+                        <li class="list-group-item w-75">
+                            @interest.Name
+                            <button class="btn btn-sm btn-danger float-end">Remove</button>
+                        </li>
+                    }
+                </ul>
             }
-            </ul>
-        }
-        @*remove user interests*@
-        @*remove interests i've created*@
-    </div>
-    <div class="col-4">
-        @*create new interest*@
-        <h3>Add a new interest</h3>
-        <form>
-            <input type="text" placeholder="new interest name"/>
-            <button type="submit" class="btn btn-sm btn-success">Add interest</button>
-        </form>
-        @*<EditForm>
-            <InputText type="text" />
-            <button class="btn btn-sm btn-success">Add</button>
-        </EditForm>*@
-    </div>
+            @*remove user interests*@
+            @*remove interests i've created*@
+        </div>
+        <div class="col-4">
+            @*create new interest*@
+            <h3>Add a new interest</h3>
+            <form>
+                <input type="text" placeholder="new interest name" />
+                <button type="submit" class="btn btn-sm btn-success">Add interest</button>
+            </form>
+            @*<EditForm>
+                <InputText type="text" />
+                <button class="btn btn-sm btn-success">Add</button>
+                </EditForm>*@
+        </div>
+    </TogglableComponent>
 </div>
 
 @*all interests*@
 <div class="row">
-    <h3>All interests</h3>
-    @if (AllInterests != null)
-    {
-        
-    }
-    @*add to user interests*@
-</div>
-
-<div class="row rounded-1 m3 p-2 w-50">
-    @*change password*@
-    <h3>Change password</h3>
-    <EditForm Model="Password" OnValidSubmit="ChangePassword">
-        <InputText @bind-Value="Password.OldPassword" type="password" placeholder="old password" />
-        <InputText @bind-Value="Password.NewPassword" type="password" placeholder="new password" />
-        <button class="btn btn-success mt-2" type="submit">Change</button>
-    </EditForm>
-</div>
-
-<div class="row">
-    @*see own threads*@
-    <h3>Threads</h3>
+    <TogglableComponent Title="All Interests">
+        <h3>All interests</h3>
+        @if (AllInterests != null)
+        {
+            <ul class="list-group">
+                @foreach (var interest in AllInterests)
+                {
+                    <li class="list-group-item w-75">
+                        @interest.Name
+                        <button class="btn btn-sm btn-success float-end">Add to my interests</button>
+                        <button class="btn btn-sm btn-danger float-end">Remove</button>
+                    </li>
+                }
+            </ul>
+        }
+        @*add to user interests*@
+    </TogglableComponent>
 </div>
 
 <div class="row">
-    @*flag as removed*@
-    <button class="btn btn-warning">Flag as removed</button>
-    @*remove user*@
-    <button class="btn btn-danger">Remove user</button>
+    <TogglableComponent Title="Change Password">
+        @*change password*@
+        <h3>Change password</h3>
+        <EditForm Model="Password" OnValidSubmit="ChangePassword">
+            <InputText @bind-Value="Password.OldPassword" type="password" placeholder="old password" />
+            <InputText @bind-Value="Password.NewPassword" type="password" placeholder="new password" />
+            <button class="btn btn-sm btn-success mt-2" type="submit">Change</button>
+        </EditForm>
+    </TogglableComponent>
+</div>
+
+<div class="row">
+    <TogglableComponent Title="Threads">
+        @*see own threads*@
+        <h3>Threads</h3>
+    </TogglableComponent>
+</div>
+
+<div class="row">
+    <TogglableComponent Title="Edit User">
+        @*flag as removed*@
+        <button class="btn btn-warning">Flag as removed</button>
+        @*remove user*@
+        <button class="btn btn-danger">Remove user</button>
+    </TogglableComponent>
 </div>
 
 <AuthorizeView Roles="Admin">
