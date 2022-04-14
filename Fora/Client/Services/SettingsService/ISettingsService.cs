@@ -1,4 +1,5 @@
-﻿using Fora.Shared.ViewModels;
+﻿using Fora.Shared;
+using Fora.Shared.ViewModels;
 
 namespace Fora.Client.Services.SettingsService
 {
@@ -8,9 +9,10 @@ namespace Fora.Client.Services.SettingsService
         Task<List<InterestViewModel>> GetAllInterests();
         Task<List<ThreadViewModel>> GetMyThreads();
         Task CreateNewInterest();
-        Task AddNewInterest();
-        Task RemoveUserInterest();
-        Task RemoveInterest();
+        Task<InterestViewModel> AddNewInterest(AddInterestModel interestToAdd);
+        Task AddNewUserInterest(int id);
+        Task RemoveUserInterest(int id);
+        Task RemoveInterest(int id);
         Task ChangePassword();
         Task MakeAdmin();
         Task RemoveAdmin();

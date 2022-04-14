@@ -86,7 +86,7 @@ namespace Fora.Server.Services.InterestService
             return null;
         }
 
-        public async Task<bool> PostNewInterest(AddInterestModel interest)
+        public async Task<InterestViewModel> PostNewInterest(AddInterestModel interest)
         {
             // get current user from request
             var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
@@ -106,9 +106,15 @@ namespace Fora.Server.Services.InterestService
 
                 _context.Interests.Add(interestToAdd);
                 await _context.SaveChangesAsync();
-                return true;
+
+                return new InterestViewModel
+                {
+                    Id = interestToAdd.Id,
+                    Name = interestToAdd.Name,
+                    AuthorId = interestToAdd.Id
+                };
             }
-            return false;
+            return null;
         }
 
 

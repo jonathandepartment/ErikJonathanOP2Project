@@ -7,7 +7,7 @@ namespace Fora.Server.Services.InterestService
         Task<InterestModel> GetInterest(int id);
         Task<List<InterestViewModel>> GetInterests();
         Task<List<InterestViewModel>> GetUserInterests();
-        Task<bool> PostNewInterest(AddInterestModel interest);
+        Task<InterestViewModel> PostNewInterest(AddInterestModel interest);
         Task<bool> DeleteInterest(int id);
         Task<bool> DeleteUserInterest(int id);
         Task<bool> ChangeInterestName(int Id, UpdateInterestModel interest);

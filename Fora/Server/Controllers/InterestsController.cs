@@ -65,9 +65,9 @@ namespace Fora.Server.Controllers
             if (!string.IsNullOrEmpty(interestName))
             {
                 var result = await _interestService.PostNewInterest(interest);
-                if (result)
+                if (result != null)
                 {
-                    return Ok("Interest added!");
+                    return Ok(result);
                 }
                 return BadRequest("Failed to add interest. Duplicate found");
             }
