@@ -21,7 +21,7 @@ namespace Fora.Server.Services.AccountService
         public async Task<ServiceResponseModel<ApplicationUser>> AddUser(SignUpModel user)
         {
             ApplicationUser newUser = new ApplicationUser();
-            newUser.UserName = user.Username;
+            newUser.UserName = user.Username.ToLower();
             newUser.Email = user.Email;
 
             var result = await _signInManager.UserManager.CreateAsync(newUser, user.Password);
@@ -29,7 +29,7 @@ namespace Fora.Server.Services.AccountService
             if (result.Succeeded)
             {
                 UserModel userModelToDb = new();
-                userModelToDb.Username = newUser.UserName;
+                userModelToDb.Username = newUser.UserName.ToLower();
                 _context.Users.Add(userModelToDb);
                 await _context.SaveChangesAsync();
 
