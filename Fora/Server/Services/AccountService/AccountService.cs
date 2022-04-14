@@ -138,11 +138,11 @@ namespace Fora.Server.Services.AccountService
 
                     if (adminCheck)
                     {
-                        response.Data = CreateToken(confirmedUser, true);
+                        response.Data = CreateToken(confirmedUser, userModel.Id, true);
                     }
                     else
                     {
-                        response.Data = CreateToken(confirmedUser);
+                        response.Data = CreateToken(confirmedUser, userModel.Id);
                     }
                     response.success = true;
                 }
@@ -169,12 +169,13 @@ namespace Fora.Server.Services.AccountService
             return false;
         }
 
-        private string CreateToken(ApplicationUser user, bool admin = false)
+        private string CreateToken(ApplicationUser user,int id, bool admin = false)
         {
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.UserData, user.Id)
+                new Claim(ClaimTypes.UserData, user.Id),
+                new Claim(ClaimTypes.Authentication, $"{id}")
             };
 
             if (admin)

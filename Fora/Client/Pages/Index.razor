@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Fora.Shared.ViewModels
+@using System.Security.Claims
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider AuthStateProvider
 
@@ -37,13 +38,6 @@
 
     protected async override Task OnInitializedAsync()
     {
-        //var user = await AuthStateProvider.GetAuthenticationStateAsync();
-        //var username = user.User;
-        
-        //if (username != null)
-        //{
-        //    var response = await HttpClient.GetFromJsonAsync<UserModel>($"api/users{username}");
-            
-        //}
+
     }
 }

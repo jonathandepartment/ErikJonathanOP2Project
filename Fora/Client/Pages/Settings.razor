@@ -1,5 +1,6 @@
 ﻿@page "/settings"
 @using Fora.Shared.ViewModels
+@using System.Security.Claims
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
@@ -13,7 +14,7 @@
 @*user interests*@
 <div class="row">
     <TogglableComponent Title="My Interests">
-        <div class="col-8">
+        <div class="col">
             @if (MyInterests != null)
             {
                 <ul class="list-group">
@@ -21,29 +22,18 @@
                     {
                         <li class="list-group-item w-75">
                             @interest.Name
-                            <button class="btn btn-sm btn-danger float-end">Remove</button>
-                            @if (true)
-                           {
-                               
-                           }
+                            <button @onclick="() => RemoveUserInterest(interest.Id)" class="btn btn-sm btn-danger float-end">Remove</button>
                         </li>
                     }
                 </ul>
             }
-            @*remove user interests*@
-            @*remove interests i've created*@
         </div>
-        <div class="col-4">
-            @*create new interest*@
+        <div class="col">
             <h3>Add a new interest</h3>
-            <form>
-                <input type="text" placeholder="new interest name" />
-                <button type="submit" class="btn btn-sm btn-success">Add interest</button>
-            </form>
-            @*<EditForm>
-                <InputText type="text" />
-                <button class="btn btn-sm btn-success">Add</button>
-                </EditForm>*@
+            <EditForm Model="NewInterest" OnValidSubmit="AddNewInterest">
+                <InputText @bind-Value="NewInterest.Name" />
+                <button class="btn btn-sm btn-success" type="submit">Add</button>
+            </EditForm>
         </div>
     </TogglableComponent>
 </div>
@@ -59,8 +49,11 @@
                 {
                     <li class="list-group-item w-75">
                         @interest.Name
-                        <button class="btn btn-sm btn-success float-end">Add to my interests</button>
-                        <button class="btn btn-sm btn-danger float-end">Remove</button>
+                        <button @onclick="() => AddUserInterest(interest.Id)" class="btn btn-sm btn-success float-end">Add to my interests</button>
+                        @if (Admin || CurrentUserId == interest.AuthorId)
+                        {
+                            <button @onclick="() => RemoveInterest(interest.Id)" class="btn btn-sm btn-danger float-end">Remove</button>
+                        }
                     </li>
                 }
             </ul>
@@ -117,14 +110,55 @@
 </AuthorizeView>
 
 @code {
+    int CurrentUserId { get; set; }
+    bool Admin { get; set; }
     List<InterestViewModel> MyInterests { get; set; }
     List<InterestViewModel> AllInterests { get; set; }
     ChangePasswordModel Password = new();
+    AddInterestModel NewInterest { get; set; } = new();
 
     protected async override Task OnInitializedAsync()
     {
         MyInterests = await SettingsService.GetMyInterests();
         AllInterests = await SettingsService.GetAllInterests();
+        AllInterests = AllInterests.Where(i => MyInterests.All(mi => mi.Id != i.Id))
+            .ToList();
+        //var result = peopleList2.Where(p => peopleList1.All(p2 => p2.ID != p.ID));
+        // get user
+        var authstate = await AuthStateProvider.GetAuthenticationStateAsync();
+        var id = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Authentication)
+            .Select(c => c.Value).SingleOrDefault();
+        var adminCheck = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value).SingleOrDefault();
+
+        Admin = adminCheck == "Admin" ? true : false;
+        CurrentUserId = int.Parse(id);
+    }
+
+    async Task AddNewInterest()
+    {
+        var addedInterest = await SettingsService.AddNewInterest(NewInterest);
+        await SettingsService.AddNewUserInterest(addedInterest.Id);
+        NewInterest.Name = string.Empty;
+        StateHasChanged();
+    }
+
+    async Task AddUserInterest(int id)
+    {
+        await SettingsService.AddNewUserInterest(id);
+        AllInterests = AllInterests.Where(i => i.Id != id).ToList();
+    }
+
+    async Task RemoveInterest(int id)
+    {
+        AllInterests = AllInterests.Where(i => i.Id != id).ToList();
+        await SettingsService.RemoveInterest(id);
+    }
+
+    async Task RemoveUserInterest(int id)
+    {
+        MyInterests = MyInterests.Where(i => i.Id != id).ToList();
+        await SettingsService.RemoveUserInterest(id);
     }
 
     Task ChangePassword()
@@ -138,12 +172,6 @@
         //await HttpClient.DeleteAsync($"api/users/{userId}");
         await LocalStorage.RemoveItemAsync("token");
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
-        foreach(var claim in authState.User.Claims)
-        {
-            var t = claim.Type;
-            var v = claim.Value;
-        }
 
         NavManager.NavigateTo("/signup");
     }

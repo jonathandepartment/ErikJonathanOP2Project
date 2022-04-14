@@ -1,4 +1,6 @@
-﻿using Fora.Shared.ViewModels;
+﻿using Fora.Shared;
+using Fora.Shared.ViewModels;
+using Newtonsoft.Json;
 using System.Net.Http.Json;
 
 namespace Fora.Client.Services.SettingsService
@@ -11,9 +13,18 @@ namespace Fora.Client.Services.SettingsService
         {
             _httpClient = httpClient;
         }
-        public Task AddNewInterest()
+        public async Task<InterestViewModel> AddNewInterest(AddInterestModel interest)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PostAsJsonAsync("/api/interests", interest);
+            var response = await result.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<InterestViewModel>(response);
+
+            return content;
+        }
+
+        public async Task AddNewUserInterest(int id)
+        {
+            await _httpClient.PostAsync($"/api/interests/{id}", null);
         }
 
         public Task BanUser()
@@ -77,14 +88,14 @@ namespace Fora.Client.Services.SettingsService
             throw new NotImplementedException();
         }
 
-        public Task RemoveInterest()
+        public async Task RemoveInterest(int id)
         {
-            throw new NotImplementedException();
+            await _httpClient.DeleteAsync($"/api/interests/{id}");
         }
 
-        public Task RemoveUserInterest()
+        public async Task RemoveUserInterest(int id)
         {
-            throw new NotImplementedException();
+            await _httpClient.DeleteAsync($"/api/interests/deleteuserinterest/{id}");
         }
 
         public Task UnBanUser()
