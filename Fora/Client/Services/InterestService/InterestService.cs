@@ -18,9 +18,13 @@ namespace Fora.Client.Services.InterestService
             var result = await _httpClient.PostAsJsonAsync<AddInitialInterests>("api/interests/AddUserInterests", initialInterests);
         }
 
-        public Task<bool> DeleteUserInterest(int id)
+        public async Task<bool> DeleteUserInterest(int id)
         {
-            throw new NotImplementedException();
+            //var result = await _httpClient.DeleteAsync($"api/interests/deleteuserinterest/{id}");
+            var userInterest = await _httpClient.DeleteAsync($"api/interests/deleteuserinterest/{id}");
+            return userInterest != null;
+
+
         }
 
         public async Task<List<InterestViewModel>> GetAllInterests()
