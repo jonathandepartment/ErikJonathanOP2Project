@@ -190,10 +190,11 @@ namespace Fora.Server.Services.InterestService
                 // if choices is blank, add standard interests
                 var standardInterests = await _context.Interests
                     .Select(i => i.Id)
+                    .Where(i  => i < 5)
                     .ToListAsync();
 
                 
-                //interestsToAdd.AddRange();
+                interestsToAdd.AddRange(standardInterests);
             }
             // hämta intressen med matchande ids
             var interests = await _context.Interests.Where(i => interestsToAdd.Contains(i.Id))

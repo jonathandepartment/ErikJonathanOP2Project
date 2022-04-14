@@ -8,10 +8,7 @@
 <h3 class="display-3">PickInterests</h3>
 
 <h4>Available Interests</h4>
-<EditForm Model="initialInterests" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
- 
+<EditForm Model="initialInterests" OnSubmit="@HandleValidSubmit">
     <h5>Select interests (Minimum: 1, Maximum: 5)</h5>
     <div>
         <select class="form-select" size="10" multiple @bind="initialInterests">
@@ -25,7 +22,7 @@
 </EditForm>
 
 @code {
-    [Required, MinLength(1), MaxLength(5)]
+    
     int[] initialInterests { get; set; } = new int[]{};
 
     List<InterestViewModel> options = new();
@@ -38,7 +35,12 @@
     {
         AddInitialInterests initInterestModel = new();
         initInterestModel.InterestIds = new();
-        initInterestModel.InterestIds.AddRange(initialInterests);
+
+        if (initialInterests != null || initialInterests.Length != 0)
+        {
+            initInterestModel.InterestIds.AddRange(initialInterests);
+        }
+        
         // logic for saving form data
         await InterestService.AddInitialInterests(initInterestModel);
 

@@ -9,7 +9,6 @@ namespace Fora.Shared.DTO
 {
     public class AddInitialInterests
     {
-        [Required, MinLength(1), MaxLength(5)]
         public List<int> InterestIds { get; set; }
     }
 }

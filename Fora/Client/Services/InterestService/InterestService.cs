@@ -15,7 +15,7 @@ namespace Fora.Client.Services.InterestService
 
         public async Task AddInitialInterests(AddInitialInterests initialInterests)
         {
-            await _httpClient.PostAsJsonAsync<AddInitialInterests>("api/interests/AddUserInterests", initialInterests);
+            var result = await _httpClient.PostAsJsonAsync<AddInitialInterests>("api/interests/AddUserInterests", initialInterests);
         }
 
         public async Task<List<InterestViewModel>> GetAllInterests()
