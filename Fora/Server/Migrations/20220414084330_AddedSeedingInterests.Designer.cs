@@ -4,6 +4,7 @@ using Fora.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fora.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220414084330_AddedSeedingInterests")]
+    partial class AddedSeedingInterests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,50 +49,42 @@ namespace Fora.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Games",
-                            UserId = 1
+                            Name = "Games"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Sports",
-                            UserId = 1
+                            Name = "Sports"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Politics",
-                            UserId = 1
+                            Name = "Politics"
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Religion",
-                            UserId = 1
+                            Name = "Religion"
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Design",
-                            UserId = 1
+                            Name = "Design"
                         },
                         new
                         {
                             Id = 6,
-                            Name = "Garden",
-                            UserId = 1
+                            Name = "Garden"
                         },
                         new
                         {
                             Id = 7,
-                            Name = "Technology",
-                            UserId = 1
+                            Name = "Technology"
                         },
                         new
                         {
                             Id = 8,
-                            Name = "Pets",
-                            UserId = 1
+                            Name = "Pets"
                         });
                 });
 
@@ -193,15 +187,6 @@ namespace Fora.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Banned = false,
-                            Deleted = false,
-                            Username = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Fora.Shared.InterestModel", b =>

@@ -15,6 +15,24 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Admin user
+            modelBuilder.Entity<UserModel>()
+                .HasData(new UserModel()
+                {
+                    Id = 1,
+                    Username = "admin",
+                });
+            // Default interests
+            modelBuilder.Entity<InterestModel>()
+                .HasData(new InterestModel() { Id = 1, Name = "Games", UserId = 1 },
+                new InterestModel() { Id = 2, Name = "Sports", UserId = 1 },
+                new InterestModel() { Id = 3, Name = "Politics", UserId = 1 },
+                new InterestModel() { Id = 4, Name = "Religion", UserId = 1 },
+                new InterestModel() { Id = 5, Name = "Design", UserId = 1 },
+                new InterestModel() { Id = 6, Name = "Garden", UserId = 1 },
+                new InterestModel() { Id = 7, Name = "Technology", UserId = 1 },
+                new InterestModel() { Id = 8, Name = "Pets", UserId = 1 });
+
             // Many to many (users can have many interests that in turns have many users)
             modelBuilder.Entity<UserInterestModel>()
                 .HasKey(ui => new { ui.UserId, ui.InterestId });
