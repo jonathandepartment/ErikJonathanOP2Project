@@ -46,6 +46,7 @@ namespace Fora.Server.Services.InterestService
                     vmList.Add(new InterestViewModel
                     {
                         Id = interest.Id,
+                        AuthorId = interest.UserId,
                         Name = interest.Name,
                         ThreadCount = interest.Threads.Count
                     });
@@ -75,6 +76,7 @@ namespace Fora.Server.Services.InterestService
                     userVmInterests.Add(new InterestViewModel
                     {
                         Id = ui.Interest.Id,
+                        AuthorId = ui.Interest.UserId,
                         Name = ui.Interest.Name,
                         ThreadCount = ui.Interest.Threads.Count
                     });
@@ -225,6 +227,24 @@ namespace Fora.Server.Services.InterestService
                 }
             }
             // lägg intressen till userinterests
+            return false;
+        }
+
+        public async Task<bool> DeleteUserInterest(int id)
+        {
+            var currentUsername = _accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+            var currentUserInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+
+            var userInterest = await _context.UserInterests
+                .FirstOrDefaultAsync(ui => ui.InterestId == id && ui.UserId == currentUserInDb.Id);
+
+            if (userInterest != null)
+            {
+                _context.UserInterests.Remove(userInterest);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
             return false;
         }
     }

@@ -118,6 +118,19 @@ namespace Fora.Server.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete]
+        [Route("[action]/{id}")]
+        public async Task<ActionResult> DeleteUserInterest(int id)
+        {
+            var deleteResult = await _interestService.DeleteUserInterest(id);
+            if (deleteResult)
+            {
+                return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<InterestModel>> ChangeInterestName(int Id, UpdateInterestModel interest)
