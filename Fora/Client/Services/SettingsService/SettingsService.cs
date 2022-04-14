@@ -34,22 +34,17 @@ namespace Fora.Client.Services.SettingsService
 
         public async Task ChangePassword(ChangePasswordModel password)
         {
-            var result = await _httpClient.PutAsJsonAsync("/api/account", password);
+            await _httpClient.PutAsJsonAsync("/api/account", password);
         }
 
-        public Task CreateNewInterest()
+        public async Task DeleteUser(string id)
         {
-            throw new NotImplementedException();
+            await _httpClient.DeleteAsync($"/api/account/{id}");
         }
 
-        public Task DeleteUser()
+        public async Task FlagUserAsRemoved(string username)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task FlagUserAsRemoved()
-        {
-            throw new NotImplementedException();
+            await _httpClient.PutAsync($"/api/users/toggleremoveflag/{username}", null);
         }
 
         public async Task<List<InterestViewModel>> GetAllInterests()
@@ -73,9 +68,10 @@ namespace Fora.Client.Services.SettingsService
             return new List<InterestViewModel>();
         }
 
-        public Task<List<ThreadViewModel>> GetMyThreads()
+        public async Task<List<ThreadViewModel>> GetMyThreads()
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<ThreadViewModel>>("/api/threads");
+            return response;
         }
 
         public Task MakeAdmin()
