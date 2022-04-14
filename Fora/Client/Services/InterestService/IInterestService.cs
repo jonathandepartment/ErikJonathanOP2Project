@@ -8,5 +8,7 @@ namespace Fora.Client.Services.InterestService
         Task<List<InterestViewModel>> GetAllInterests();
         Task AddInitialInterests(AddInitialInterests initialInterests);
         Task<List<InterestViewModel>> GetMyInterests();
+        Task<bool> DeleteUserInterest(int id);
+
     }
 }

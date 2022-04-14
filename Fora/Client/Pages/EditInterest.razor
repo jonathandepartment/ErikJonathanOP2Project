@@ -1,5 +1,7 @@
 ﻿@page "/editinterest/{Id:int}"
 @inject HttpClient HttpClient
+@inject IInterestService interestService
+@inject NavigationManager NavigationManager
 
 <h1>Editing @interest.Name</h1>
 
@@ -17,7 +19,7 @@
                   </div>
                   <div class="col-md-4 op-7">
                     <div class="row text-center op-7">
-                      <div class="col px-1"><button type="button" class="btn btn-danger">Delete</button> </div>
+                      <div href="interests" class="col px-1"><button type="button" class="btn btn-danger"@onclick="RemoveUserInterest">Remove from interests</button> </div>
                     </div>
                   </div>
                 </div>
@@ -38,5 +40,12 @@
         {
             interest = result;
         }
+    }
+
+    private async void RemoveUserInterest()
+    {
+        // Ta bort användarintresset där interest.Id matchar överrens med Id i listan med alla användarintressen
+        var removeInterest = await interestService.DeleteUserInterest(Id);
+        NavigationManager.NavigateTo("Interests");
     }
 }
