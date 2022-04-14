@@ -58,18 +58,19 @@
                 }
             </ul>
         }
-        @*add to user interests*@
     </TogglableComponent>
 </div>
 
+@*change password*@
 <div class="row">
     <TogglableComponent Title="Change Password">
-        @*change password*@
         <h3>Change password</h3>
         <EditForm Model="Password" OnValidSubmit="ChangePassword">
+            <DataAnnotationsValidator />
             <InputText @bind-Value="Password.OldPassword" type="password" placeholder="old password" />
             <InputText @bind-Value="Password.NewPassword" type="password" placeholder="new password" />
             <button class="btn btn-sm btn-success mt-2" type="submit">Change</button>
+            <ValidationSummary />
         </EditForm>
     </TogglableComponent>
 </div>
@@ -114,6 +115,8 @@
     bool Admin { get; set; }
     List<InterestViewModel> MyInterests { get; set; }
     List<InterestViewModel> AllInterests { get; set; }
+
+    List<ThreadViewModel> MyThreads { get; set; }
     ChangePasswordModel Password = new();
     AddInterestModel NewInterest { get; set; } = new();
 
@@ -161,9 +164,10 @@
         await SettingsService.RemoveUserInterest(id);
     }
 
-    Task ChangePassword()
+    async Task ChangePassword()
     {
-        return null;
+        await SettingsService.ChangePassword(Password);
+        Password = new();
     }
 
     async Task RemoveUser(string userId)

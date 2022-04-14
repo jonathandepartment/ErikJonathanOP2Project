@@ -32,9 +32,9 @@ namespace Fora.Client.Services.SettingsService
             throw new NotImplementedException();
         }
 
-        public Task ChangePassword()
+        public async Task ChangePassword(ChangePasswordModel password)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.PutAsJsonAsync("/api/account", password);
         }
 
         public Task CreateNewInterest()
