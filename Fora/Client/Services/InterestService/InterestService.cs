@@ -25,6 +25,10 @@ namespace Fora.Client.Services.InterestService
             return response;
         }
 
-        
+        public async Task<List<InterestViewModel>> GetUserInterests()
+        {
+            var result = await _httpClient.GetFromJsonAsync<List<InterestViewModel>>("api/");
+            return null; //temp
+        }
     }
 }
