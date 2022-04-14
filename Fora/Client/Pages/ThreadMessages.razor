@@ -1,7 +1,6 @@
 ﻿@page "/threadmessages/{Id:int}"
-@using Fora.Client.Services.MessageService
 @using Fora.Shared.ViewModels
-@*@inject IMessageService messageService*@
+@inject IMessageService messageService
 
 
 <h3>Thread messages</h3>
@@ -27,12 +26,12 @@
         {
             // Hämta ett intresse från servern med det specifika Idt 
 
-            //var result = await messageService.GetThreadMessages(Id);
+            var result = await messageService.GetThreadMessages(Id);
 
-            //if(result != null)
-            //{
-            //    messages = result;
-            //}
+            if(result != null)
+            {
+                messages = result;
+            }
         }
 
 }
