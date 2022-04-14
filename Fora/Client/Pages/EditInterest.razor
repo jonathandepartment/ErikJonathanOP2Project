@@ -19,7 +19,7 @@
                   </div>
                   <div class="col-md-4 op-7">
                     <div class="row text-center op-7">
-                      <div href="interests" class="col px-1"><button type="button" class="btn btn-danger"@onclick="RemoveUserInterest">Remove from interests</button> </div>
+                      <div href="interests" class="col px-1"><button type="button" class="btn btn-danger"@onclick="DeleteUserInterest">Remove from interests</button> </div>
                     </div>
                   </div>
                 </div>
@@ -42,10 +42,17 @@
         }
     }
 
-    private async void RemoveUserInterest()
+    //private async void RemoveUserInterest()
+    //{
+    //    // Ta bort användarintresset där interest.Id matchar överrens med Id i listan med alla användarintressen
+    //    var removeInterest = await interestService.DeleteUserInterest(Id);
+    //    NavigationManager.NavigateTo("Interests");
+    //}
+
+    private async void DeleteUserInterest()
     {
-        // Ta bort användarintresset där interest.Id matchar överrens med Id i listan med alla användarintressen
         var removeInterest = await interestService.DeleteUserInterest(Id);
         NavigationManager.NavigateTo("Interests");
     }
+
 }
