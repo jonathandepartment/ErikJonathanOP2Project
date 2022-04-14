@@ -1,12 +1,12 @@
 global using Blazored.LocalStorage;
 global using Fora.Client.Services.InterestService;
-global using Fora.Client.Services.ThreadService;
+global using Fora.Client.Services.MessageService;
 global using Fora.Client.Services.SettingsService;
+global using Fora.Client.Services.ThreadService;
 global using Microsoft.AspNetCore.Components.Authorization;
 using Fora.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +17,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.AddScoped<IInterestService, InterestService>();
 builder.Services.AddScoped<IThreadService, ThreadService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 
