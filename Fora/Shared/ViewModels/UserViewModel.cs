@@ -12,5 +12,6 @@ namespace Fora.Shared.ViewModels
         public string Name { get; set; } = string.Empty;
         public bool Deleted { get; set; }
         public bool Banned { get; set; }
+        public bool Admin { get; set; }
     }
 }

@@ -27,11 +27,6 @@ namespace Fora.Client.Services.SettingsService
             await _httpClient.PostAsync($"/api/interests/{id}", null);
         }
 
-        public Task BanUser()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task ChangePassword(ChangePasswordModel password)
         {
             await _httpClient.PutAsJsonAsync("/api/account", password);
@@ -40,6 +35,11 @@ namespace Fora.Client.Services.SettingsService
         public async Task DeleteUser(string id)
         {
             await _httpClient.DeleteAsync($"/api/account/{id}");
+        }
+
+        public async Task DemoteAdmin(string username)
+        {
+            await _httpClient.PutAsync($"/api/account/demoteadmin/{username}", null);
         }
 
         public async Task FlagUserAsRemoved(string username)
@@ -74,14 +74,16 @@ namespace Fora.Client.Services.SettingsService
             return response;
         }
 
-        public Task MakeAdmin()
+        public async Task<List<UserViewModel>> GetUsers()
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<UserViewModel>>("/api/account");
+
+            return response;
         }
 
-        public Task RemoveAdmin()
+        public async Task PromoteAdmin(string username)
         {
-            throw new NotImplementedException();
+            await _httpClient.PutAsync($"/api/account/promoteadmin/{username}", null);
         }
 
         public async Task RemoveInterest(int id)
@@ -94,9 +96,9 @@ namespace Fora.Client.Services.SettingsService
             await _httpClient.DeleteAsync($"/api/interests/deleteuserinterest/{id}");
         }
 
-        public Task UnBanUser()
+        public async Task ToggleBan(string username)
         {
-            throw new NotImplementedException();
+            await _httpClient.PutAsync($"/api/users/toggleuserban/{username}", null);
         }
     }
 }

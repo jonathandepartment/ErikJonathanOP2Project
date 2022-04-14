@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Fora.Shared.ViewModels;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -153,9 +154,9 @@ namespace Fora.Server.Services.AccountService
             return response;
         }
 
-        public async Task<bool> MakeAdmin(string id)
+        public async Task<bool> MakeAdmin(string username)
         {
-            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            var user = await _signInManager.UserManager.FindByNameAsync(username);
             if (user != null)
             {
                 var result = await _signInManager.UserManager.AddToRoleAsync(user, "Admin");
@@ -196,9 +197,9 @@ namespace Fora.Server.Services.AccountService
             return jwt;
         }
 
-        public async Task<bool> RemoveAdmin(string id)
+        public async Task<bool> RemoveAdmin(string username)
         {
-            var user = await _signInManager.UserManager.FindByIdAsync(id);
+            var user = await _signInManager.UserManager.FindByNameAsync(username);
             if (user != null)
             {
                 var result = await _signInManager.UserManager.RemoveFromRoleAsync(user, "Admin");
@@ -210,13 +211,29 @@ namespace Fora.Server.Services.AccountService
             return false;
         }
 
-        public async Task<List<ApplicationUser>> GetUsers()
+        public async Task<List<UserViewModel>> GetUsers()
         {
-            // snacka med databasen, hämta alla användare
-            var users = await _signInManager.UserManager.Users.ToListAsync();
-            if (users != null)
+            var users = await _context.Users.ToListAsync();
+            var usersWithoutAdmin = users.Where(u => u.Username != "admin");
+
+            if (usersWithoutAdmin != null)
             {
-                return users;
+                List<UserViewModel> usersVm = new List<UserViewModel>();
+
+                foreach (var user in usersWithoutAdmin)
+                {
+                    var userInIdDb = await _signInManager.UserManager.FindByNameAsync(user.Username);
+                    var admin = await _signInManager.UserManager.IsInRoleAsync(userInIdDb, "Admin");
+                    usersVm.Add(new UserViewModel
+                    {
+                        Id = user.Id,
+                        Name = user.Username,
+                        Banned = user.Banned,
+                        Deleted = user.Deleted,
+                        Admin = admin
+                    });
+                }
+                return usersVm;
             }
             return null;
         }

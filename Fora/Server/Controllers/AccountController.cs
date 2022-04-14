@@ -25,11 +25,8 @@ namespace Fora.Server.Controllers
             var result = await _accountService.GetUsers();
             // if successful return list + ok
             if (result != null)
-            {
-                var userList = result
-                    .Select(u => new { u.Id, u.UserName })
-                    .ToList();
-                return Ok(userList);
+            {                
+                return Ok(result);
             }
             // else return badrequest
             return BadRequest();
@@ -101,10 +98,10 @@ namespace Fora.Server.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut]
-        [Route("[action]/{id}")]
-        public async Task<ActionResult> PromoteAdmin(string id)
+        [Route("[action]/{username}")]
+        public async Task<ActionResult> PromoteAdmin(string username)
         {
-            var makeAdminResult = await _accountService.MakeAdmin(id);
+            var makeAdminResult = await _accountService.MakeAdmin(username);
             if (makeAdminResult)
             {
                 return Ok();
@@ -114,10 +111,10 @@ namespace Fora.Server.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut]
-        [Route("[action]/{id}")]
-        public async Task<ActionResult> DemoteAdmin(string id)
+        [Route("[action]/{username}")]
+        public async Task<ActionResult> DemoteAdmin(string username)
         {
-            var makeAdminResult = await _accountService.RemoveAdmin(id);
+            var makeAdminResult = await _accountService.RemoveAdmin(username);
             if (makeAdminResult)
             {
                 return Ok();
