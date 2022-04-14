@@ -4,10 +4,10 @@
 @using Fora.Shared.ViewModels
 @using Newtonsoft.Json
 
-<PageTitle>Interests</PageTitle>
+<PageTitle>MyInterests</PageTitle>
 
 
-<h3>Interests</h3>
+<h3>My Interests</h3>
 
 @*@if(AllInterests != null)
 {
@@ -26,9 +26,9 @@
 <a href="#" class="font-weight-light">Number of threads: @interest.ThreadCount</a>
 </h5>*@
 
-@if(AllInterests != null)
+@if(MyInterests != null)
 {
-    @foreach(var interest in AllInterests)
+    @foreach(var interest in MyInterests)
     {
         @if(!String.IsNullOrEmpty(interest.Name))
         {
@@ -60,12 +60,13 @@
 
 
 @code {
-
+    List<InterestViewModel> MyInterests { get; set; }
 
     public List<InterestViewModel>? AllInterests { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        MyInterests = await interestService.GetMyInterests();
         // Hämta intressen från databasen (via API)
         //var response = await HttpClient.GetAsync("api/interests");
 
