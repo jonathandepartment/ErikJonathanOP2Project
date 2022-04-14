@@ -8,7 +8,6 @@ namespace Fora.Client.Services.SettingsService
         Task<List<InterestViewModel>> GetMyInterests();
         Task<List<InterestViewModel>> GetAllInterests();
         Task<List<ThreadViewModel>> GetMyThreads();
-        Task CreateNewInterest();
         Task<InterestViewModel> AddNewInterest(AddInterestModel interestToAdd);
         Task AddNewUserInterest(int id);
         Task RemoveUserInterest(int id);
@@ -18,7 +17,7 @@ namespace Fora.Client.Services.SettingsService
         Task RemoveAdmin();
         Task BanUser();
         Task UnBanUser();
-        Task DeleteUser();
-        Task FlagUserAsRemoved();
+        Task DeleteUser(string id);
+        Task FlagUserAsRemoved(string username);
     }
 }
