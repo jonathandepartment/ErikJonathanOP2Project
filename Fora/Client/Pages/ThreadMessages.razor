@@ -1,37 +1,120 @@
 ﻿@page "/threadmessages/{Id:int}"
+@using Fora.Shared.DTO
 @using Fora.Shared.ViewModels
+@using System.Security.Claims
 @inject IMessageService messageService
+@inject AuthenticationStateProvider AuthStateProvider
 
 
-<h3>Thread messages</h3>
 
-@if(messages != null)
-{
-    @foreach(var message in messages)
-    {
-        @if (!String.IsNullOrEmpty(message.Message))
-        {
-            @message.Message
-        }
-    }
-}
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col p-5 bg-light rounded-2">
+        <div class="row text-center">
+            <h3>Thread messages</h3>
+        </div>
+        <div class="row mb-5">
+            @if (Messages != null && Messages.Count > 0)
+            {
+                <div class="list-group">
+                    @foreach (var message in Messages)
+                    {
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">@Thread.Name</h5>
+                                <small>@message.Created.ToShortDateString()</small>
+                            </div>
+                            <p class="mb-1">
+                                @(message.Removed ? "Message Removed" : message.Message)
+                                <span>@(message.Edited ? "Edited" : "")</span>
+                            </p>
+                            
+                            @if (message.User != null)
+                            {
+                                if (message.User.Banned)
+                                {
+                                    <small>By Banned User</small>
+                                }
+                                else if (message.User.Deleted)
+                                {
+                                    <small>By Deleted User</small>
+                                }
+                                else
+                                {
+                                    <small>By @message.User.Name</small>
+                                }
+                            }
+                            else
+                            {
+                                <small>By Deleted User</small>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="row">
+            <h4>Add to the conversation</h4>
+            <EditForm Model="addMessage" OnValidSubmit="AddMessage">
+                <DataAnnotationsValidator/>
+                <InputText @bind-Value="addMessage.Message"/>
+                <button class="btn btn-sm btn-primary mt-2">Add</button>
+                <ValidationSummary />
+            </EditForm>
+        </div>
+    </div>
+    <div class="col-3"></div>
+</div>
+
 
 @code {
 
     [Parameter]
     public int Id { get; set; }
-    List<MessageViewModel> messages = new();
+    List<MessageViewModel> Messages = new();
 
-        protected override async Task OnParametersSetAsync()
+    bool Admin { get; set; }
+    int CurrentUserId { get; set; }
+
+    AddMessageModel addMessage = new();
+    ThreadViewModel Thread = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var result = await messageService.GetThreadMessages(Id);
+
+        if(result != null)
         {
-            // Hämta ett intresse från servern med det specifika Idt 
-
-            var result = await messageService.GetThreadMessages(Id);
-
-            if(result != null)
-            {
-                messages = result;
-            }
+            Messages = result;
         }
+
+        Thread = await messageService.GetThread(Id);
+
+        // get user
+        var authstate = await AuthStateProvider.GetAuthenticationStateAsync();
+        var id = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Authentication)
+            .Select(c => c.Value).SingleOrDefault();
+        var adminCheck = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value).SingleOrDefault();
+
+        Admin = adminCheck == "Admin" ? true : false;
+        CurrentUserId = int.Parse(id);
+
+    }
+
+    async Task AddMessage()
+    {
+
+    }
+
+    async Task EditMessage()
+    {
+
+    }
+
+    async Task RemoveMessage()
+    {
+        
+    }
 
 }

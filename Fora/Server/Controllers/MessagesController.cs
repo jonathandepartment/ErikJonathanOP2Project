@@ -36,7 +36,7 @@ namespace Fora.Server.Controllers
             var addResult = await _messageService.AddMessage(message);
             if (addResult.success)
             {
-                return Ok();
+                return Ok(addResult.Data);
             }
             return BadRequest(addResult);
         }

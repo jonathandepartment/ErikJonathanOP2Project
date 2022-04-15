@@ -40,6 +40,18 @@ namespace Fora.Server.Services.MessageService
                     _context.Messages.Add(messageToAdd);
                     await _context.SaveChangesAsync();
 
+                    response.Data = new MessageViewModel
+                    {
+                        Id = messageToAdd.Id,
+                        Message = messageToAdd.Message,
+                        User = new UserViewModel
+                        {
+                            Id = (int)messageToAdd.UserId,
+                            Name = userInDb.Username,
+                            Banned = userInDb.Banned,
+                            Deleted = userInDb.Deleted
+                        }
+                    };
                     response.message = $"Message: {message.Message}, created";
                     response.success = true;
                     return response;
@@ -174,6 +186,9 @@ namespace Fora.Server.Services.MessageService
                 {
                     Id = message.Id,
                     Message = message.Message,
+                    Created = message.Created,
+                    Edited = message.Edited,
+                    Removed = message.Deleted,
                     User = message.User != null ? new UserViewModel
                     {
                         Id = message.User.Id,
