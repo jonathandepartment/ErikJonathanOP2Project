@@ -174,13 +174,13 @@ namespace Fora.Server.Services.MessageService
                 {
                     Id = message.Id,
                     Message = message.Message,
-                    User = new UserViewModel
+                    User = message.User != null ? new UserViewModel
                     {
                         Id = message.User.Id,
                         Name = message.User.Username,
                         Banned = message.User.Banned,
                         Deleted = message.User.Deleted
-                    }
+                    } : null
                 });
             }
 
