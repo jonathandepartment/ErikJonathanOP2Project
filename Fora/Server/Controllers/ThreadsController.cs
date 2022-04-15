@@ -1,4 +1,5 @@
 ﻿using Fora.Server.Services.ThreadService;
+using Fora.Shared.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,18 @@ namespace Fora.Server.Controllers
                 return Ok(result);
             }
             return BadRequest("No matching interest id");
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("[action]/{id}")]
+        public async Task<ActionResult<ThreadViewModel>> GetThread(int id)
+        {
+            var result = await _threadService.GetThread(id);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

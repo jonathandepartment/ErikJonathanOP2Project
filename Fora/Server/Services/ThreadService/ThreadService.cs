@@ -148,6 +148,20 @@ namespace Fora.Server.Services.ThreadService
             return response;
         }
 
+        public async Task<ThreadViewModel> GetThread(int id)
+        {
+            var thread = await _context.Threads.FirstOrDefaultAsync(t => t.Id == id);
+            if (thread != null)
+            {
+                return new ThreadViewModel
+                {
+                    Id = thread.Id,
+                    Name = thread.Name,
+                };
+            }
+            return null;
+        }
+
         public async Task<List<ThreadViewModel>> GetThreads(int id)
         {
             var threads = await _context.Threads

@@ -10,6 +10,9 @@ namespace Fora.Shared.ViewModels
     {
         public int Id { get; set; }
         public string Message { get; set; } = String.Empty;
+        public DateTime Created { get; set; }
+        public bool Edited { get; set; }
+        public bool Removed { get; set; }
 
         public UserViewModel User { get; set; }
     }

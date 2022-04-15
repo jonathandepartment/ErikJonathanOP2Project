@@ -4,6 +4,7 @@ namespace Fora.Server.Services.ThreadService
 {
     public interface IThreadService
     {
+        Task<ThreadViewModel> GetThread(int id);
         Task<List<ThreadViewModel>> GetThreads(int id);
         Task<List<ThreadViewModel>> GetMyThreads();
         Task<ServiceResponseModel<ThreadViewModel>> ChangeThreadName(int id, string name);
