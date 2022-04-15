@@ -96,44 +96,67 @@
     </TogglableComponent>
 </div>
 
+@*flag as removed*@
+@*remove user*@
 <div class="row">
-    <TogglableComponent Title="Edit User">
-        @*flag as removed*@
-        <button @onclick="() => FlagAsRemoved()" class="btn btn-warning">Flag as removed</button>
-        @*remove user*@
+    <TogglableComponent Title="Edit User">        
+        <button @onclick="() => FlagAsRemoved()" class="btn btn-warning">Flag as removed</button>        
         <button @onclick="RemoveUser" class="btn btn-danger">Remove user</button>
     </TogglableComponent>
 </div>
 
+@*Admin controls*@
 <AuthorizeView Roles="Admin">
     <hr/>
     <h3>Admin Controls</h3>
-    @*remove interests*@
-
-    @*check if user is admin*@
-
     <div class="row">
-        <h4>Users</h4>
-        @*promote to admin*@
-
-        @*demote admin*@
-
-        @*ban user*@
-
-        @*unban user*@
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Rights</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Users)
+                {
+                    <tr>
+                        <th scope="row">@user.Id</th>
+                        <td>@user.Name</td>
+                        <td>
+                            <button @onclick="() => ToggleBan(user.Name)" class="btn btn-sm btn-warning">@(user.Banned ? "Unban" : "Ban")</button>
+                        </td>
+                        <td>
+                            @if (user.Admin)
+                           {
+                                <button @onclick="() => DemoteAdmin(user.Name)" class="btn btn-sm btn-warning">Remove admin</button>
+                            }
+                            else
+                            {
+                                <button @onclick="() => PromoteAdmin(user.Name)" class="btn btn-sm btn-primary">Make admin</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </AuthorizeView>
 
 @code {
     int CurrentUserId { get; set; }
-    bool Admin { get; set; }
+
     List<InterestViewModel> MyInterests { get; set; }
     List<InterestViewModel> AllInterests { get; set; }
-
     List<ThreadViewModel> MyThreads { get; set; }
 
     ChangePasswordModel Password = new();
     AddInterestModel NewInterest { get; set; } = new();
+
+    bool Admin { get; set; }
+    List<UserViewModel> Users = new();
 
     protected async override Task OnInitializedAsync()
     {
@@ -152,6 +175,11 @@
 
         Admin = adminCheck == "Admin" ? true : false;
         CurrentUserId = int.Parse(id);
+
+        if (Admin)
+        {
+            Users = await SettingsService.GetUsers();
+        }
     }
 
     async Task AddNewInterest()
@@ -159,7 +187,6 @@
         var addedInterest = await SettingsService.AddNewInterest(NewInterest);
         await SettingsService.AddNewUserInterest(addedInterest.Id);
         NewInterest.Name = string.Empty;
-        StateHasChanged();
     }
 
     async Task AddUserInterest(int id)
@@ -204,25 +231,37 @@
         }
     }
 
-    async Task FlagAsRemoved(string userToRemove = "")
+    async Task FlagAsRemoved()
     {
-        if (string.IsNullOrEmpty(userToRemove))
-        {
-            var state = await AuthStateProvider.GetAuthenticationStateAsync();
-            var username = state.User.Claims.Where(c => c.Type == ClaimTypes.Name)
-                .Select(c => c.Value).SingleOrDefault();
 
-            await SettingsService.FlagUserAsRemoved(username);
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var username = state.User.Claims.Where(c => c.Type == ClaimTypes.Name)
+            .Select(c => c.Value).SingleOrDefault();
 
-            await LocalStorage.RemoveItemAsync("token");
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        await SettingsService.FlagUserAsRemoved(username);
 
-            NavManager.NavigateTo("/login");
-        }
-        else
-        {
-            await SettingsService.FlagUserAsRemoved(userToRemove);
-        }
+        await LocalStorage.RemoveItemAsync("token");
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
+        NavManager.NavigateTo("/login");
+
+    }
+
+    async Task ToggleBan(string username)
+    {
+        Users.Find(u => u.Name == username).Banned = !Users.Find(u => u.Name == username).Banned;
+        await SettingsService.ToggleBan(username);
+    }
+
+    async Task PromoteAdmin(string username)
+    {
+        Users.Find(u => u.Name == username).Admin = true;
+        await SettingsService.PromoteAdmin(username);
+    }
+
+    async Task DemoteAdmin(string username)
+    {
+        Users.Find(u => u.Name == username).Admin = false;
+        await SettingsService.DemoteAdmin(username);
     }
 }
