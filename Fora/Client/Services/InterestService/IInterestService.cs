@@ -1,4 +1,5 @@
-﻿using Fora.Shared.DTO;
+﻿using Fora.Shared;
+using Fora.Shared.DTO;
 using Fora.Shared.ViewModels;
 
 namespace Fora.Client.Services.InterestService
@@ -9,6 +10,7 @@ namespace Fora.Client.Services.InterestService
         Task AddInitialInterests(AddInitialInterests initialInterests);
         Task<List<InterestViewModel>> GetMyInterests();
         Task<bool> DeleteUserInterest(int id);
+        Task<bool> ChangeInterestName(int Id, UpdateInterestModel interest);
 
     }
 }
