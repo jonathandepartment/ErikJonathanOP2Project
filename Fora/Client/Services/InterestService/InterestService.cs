@@ -1,4 +1,5 @@
-﻿using Fora.Shared.DTO;
+﻿using Fora.Shared;
+using Fora.Shared.DTO;
 using Fora.Shared.ViewModels;
 using System.Net.Http.Json;
 
@@ -16,6 +17,12 @@ namespace Fora.Client.Services.InterestService
         public async Task AddInitialInterests(AddInitialInterests initialInterests)
         {
             var result = await _httpClient.PostAsJsonAsync<AddInitialInterests>("api/interests/AddUserInterests", initialInterests);
+        }
+
+        public async Task<bool> ChangeInterestName(int Id, UpdateInterestModel interest)
+        {
+            var nameChange = await _httpClient.PutAsJsonAsync($"api/interests/{Id}", interest);
+            return nameChange != null;
         }
 
         public async Task<bool> DeleteUserInterest(int id)
