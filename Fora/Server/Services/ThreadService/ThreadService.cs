@@ -181,6 +181,10 @@ namespace Fora.Server.Services.ThreadService
 
         private List<ThreadViewModel> ConvertToVmList(List<ThreadModel> threads)
         {
+            if (threads == null || threads.Count == 0)
+            {
+                return new List<ThreadViewModel>();
+            }
             List<ThreadViewModel> threadsVmList = new();
 
             foreach (var thread in threads)
@@ -190,13 +194,13 @@ namespace Fora.Server.Services.ThreadService
                     Id = thread.Id,
                     Name = thread.Name,
                     MessageCount = thread.Messages.Count,
-                    User = new UserViewModel
+                    User = thread.User != null ? new UserViewModel
                     {
                         Id = thread.User.Id,
                         Name = thread.User.Username,
                         Banned = thread.User.Banned,
                         Deleted = thread.User.Deleted
-                    }
+                    } : null
                 });
             }
             return threadsVmList;

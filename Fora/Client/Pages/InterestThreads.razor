@@ -49,7 +49,7 @@
                 <h5>
                   <a href="/threadmessages/@thread.Id" class="text-primary">@thread.Name</a>
                 </h5>
-                <p class="text-sm"><span class="op-6">Posted</span> <a class="text-black" href="#">20 minutes</a> <span class="op-6">ago by</span> <a class="text-black" href="#">KenyeW</a></p>
+                <p class="text-sm"><span class="op-6">Posted</span> <a class="text-black" href="#">20 minutes</a> <span class="op-6">ago by</span> <a class="text-black" href="#">@(thread.User != null ? thread.User.Name : "Removed User")</a></p>
                 <div class="text-sm op-5"> <a class="text-black mr-2" href="#">#C++</a> <a class="text-black mr-2" href="#">#AppStrap Theme</a> <a class="text-black mr-2" href="#">#Wordpress</a> </div>
               </div>
               <div class="col-md-4 op-7">
