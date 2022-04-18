@@ -44,12 +44,13 @@ namespace Fora.Server.Services.MessageService
                     {
                         Id = messageToAdd.Id,
                         Message = messageToAdd.Message,
+                        Created = messageToAdd.Created,
                         User = new UserViewModel
                         {
                             Id = (int)messageToAdd.UserId,
                             Name = userInDb.Username,
                             Banned = userInDb.Banned,
-                            Deleted = userInDb.Deleted
+                            Deleted = userInDb.Deleted,
                         }
                     };
                     response.message = $"Message: {message.Message}, created";

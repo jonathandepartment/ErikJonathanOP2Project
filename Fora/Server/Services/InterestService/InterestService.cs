@@ -173,7 +173,10 @@ namespace Fora.Server.Services.InterestService
             var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
 
             // check if interest is allready added
-            var userInterests = await _context.UserInterests.FirstOrDefaultAsync(u => u.InterestId == id);
+            //var userInterests = await _context.UserInterests.FirstOrDefaultAsync(u => u.InterestId == id);
+            var userInterests = await _context.UserInterests
+                .Where(u => u.UserId == userInDb.Id && u.InterestId == id)
+                .FirstOrDefaultAsync();
 
             if (userInterests == null)
             {
