@@ -7,5 +7,7 @@ namespace Fora.Client.Services.ThreadService
     {
         Task<ThreadViewModel> AddThread(AddThreadModel thread);
         Task<List<ThreadViewModel>> GetThreadsByInterest(int id);
+        Task DeleteThread(int id);
+        Task EditThreadName(int id, string newName);
     }
 }

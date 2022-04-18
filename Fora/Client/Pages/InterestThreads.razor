@@ -1,8 +1,10 @@
 ﻿@page "/interestthreads/{Id:int}"
 @using Fora.Shared.DTO
 @using Fora.Shared.ViewModels
+@using System.Security.Claims
 @inject NavigationManager navigationmanager
 @inject IThreadService threadService
+@inject AuthenticationStateProvider AuthStateProvider
 
 
 <h3>Browsing threads</h3>
@@ -24,18 +26,49 @@
          </div>
 
 
-
-@if(threads != null)
-{
-    @foreach(var thread in filteredSearch)
+<div>
+    @if (threads != null)
     {
-        @if(!String.IsNullOrEmpty(thread.Name))
+        @foreach (var thread in filteredSearch)
         {
-          <a href="/threadmessages/@thread.Id" class="text-primary">@thread.Name</a>
-          <p class="text-sm"><span class="op-6">Posted by</span> <a class="text-black">@(thread.User != null ? thread.User.Name : "Removed User")</a></p>
+            @if (!String.IsNullOrEmpty(thread.Name))
+            {
+                <a href="/threadmessages/@thread.Id" class="text-primary w-50">@thread.Name <span class="badge bg-success">@thread.MessageCount</span></a>
+                @if (thread.MessageCount == 0)
+                {
+                    if (Admin || thread.User.Id == CurrentUserId)
+                    {
+                        <div class="btn-group ms-5">
+                            <button @onclick="() => DeleteThread(thread.Id)" class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                        <div>
+                            <TogglableComponent Title="Edit">
+                                <div class="mt-3 mb-3">
+                                    <form method="post" @onsubmit="() => EditThread(thread.Id)">
+                                        <input type="text" placeholder=@thread.Name @bind-value="newThreadName" />
+                                        <button type="submit" class="btn btn-success btn-sm">Change</button>
+                                    </form>
+                                </div>
+                            </TogglableComponent>
+                        </div>
+                    }
+                }
+                @if (thread.User == null || thread.User.Deleted)
+               {
+                    <p class="text-sm"><span class="op-6">Posted by</span> <a class="text-black">Removed User</a></p>
+                }
+                else if (thread.User.Banned)
+                {
+                    <p class="text-sm"><span class="op-6">Posted by</span> <a class="text-black">Banned user</a></p>
+                }
+                else
+                {
+                    <p class="text-sm"><span class="op-6">Posted by</span> <a class="text-black">@thread.User.Name</a></p>
+                }
+            }
         }
     }
-}
+</div>
 
 <div>
     <h3>Add thread</h3>
@@ -54,6 +87,12 @@
     public int Id { get; set; }
     List<ThreadViewModel> threads = new();
 
+    bool Admin;
+    bool Editing = false;
+    int CurrentUserId;
+
+    string newThreadName = string.Empty;
+
     AddThreadModel addThread = new();
 
     string SearchText { get; set; } = "";
@@ -68,14 +107,24 @@
 
     protected override async Task OnParametersSetAsync()
     {
-          // Hämta ett intresse från servern med det specifika Idt 
+        // Hämta ett intresse från servern med det specifika Idt
 
-          var result = await threadService.GetThreadsByInterest(Id);
+        var result = await threadService.GetThreadsByInterest(Id);
 
-          if(result != null)
-          {
+        if (result != null)
+        {
             threads = result;
-          }
+        }
+
+        // get user
+        var authstate = await AuthStateProvider.GetAuthenticationStateAsync();
+        var id = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Authentication)
+            .Select(c => c.Value).SingleOrDefault();
+        var adminCheck = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value).SingleOrDefault();
+
+        Admin = adminCheck == "Admin" ? true : false;
+        CurrentUserId = int.Parse(id);
     }
 
     private void NavigateToMessages(int id)
@@ -88,6 +137,20 @@
         addThread.InterestId = Id;
         var result = await threadService.AddThread(addThread);
         threads.Add(result);
+    }
+
+    async Task DeleteThread(int id)
+    {
+        // ta bort från threads lokalt och via apiet
+        await threadService.DeleteThread(id);
+        threads = threads.Where(t => t.Id != id).ToList();
+    }
+
+    async Task EditThread(int id)
+    {
+        await threadService.EditThreadName(id, newThreadName);
+        threads.Find(t => t.Id == id).Name = newThreadName;
+        Editing = false;
     }
 
 }
