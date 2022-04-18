@@ -1,4 +1,5 @@
 ﻿@page "/interestthreads/{Id:int}"
+@using Fora.Shared.DTO
 @using Fora.Shared.ViewModels
 @inject NavigationManager navigationmanager
 @inject IThreadService threadService
@@ -41,6 +42,16 @@
     }
 }
 
+<div>
+    <h3>Add thread</h3>
+    <EditForm Model="addThread" OnValidSubmit="AddThread">
+    <DataAnnotationsValidator />
+    <InputText @bind-Value="addThread.Name" />
+    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+    <ValidationSummary />
+</EditForm>
+</div>
+
 
 @code {
 
@@ -48,26 +59,35 @@
     public int Id { get; set; }
     List<ThreadViewModel> threads = new();
 
+    AddThreadModel addThread = new();
+
     string SearchText { get; set; } = "";
 
     List<ThreadViewModel> filteredSearch => threads.Where(
         thread => thread.Name.ToLower().Contains(SearchText.ToLower())).ToList();
 
-        protected override async Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
+    {
+        // Hämta ett intresse från servern med det specifika Idt 
+
+        var result = await threadService.GetThreadsByInterest(Id);
+
+        if(result != null)
         {
-            // Hämta ett intresse från servern med det specifika Idt 
-
-            var result = await threadService.GetThreadsByInterest(Id);
-
-            if(result != null)
-            {
-                threads = result;
-            }
+            threads = result;
         }
+    }
 
-        private void NavigateToMessages(int id)
+    private void NavigateToMessages(int id)
     {
         navigationmanager.NavigateTo($"/threadmessages/{id}");
+    }
+
+    async Task AddThread()
+    {
+        addThread.InterestId = Id;
+        var result = await threadService.AddThread(addThread);
+        threads.Add(result);
     }
 
 }

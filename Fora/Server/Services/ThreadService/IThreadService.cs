@@ -9,6 +9,6 @@ namespace Fora.Server.Services.ThreadService
         Task<List<ThreadViewModel>> GetMyThreads();
         Task<ServiceResponseModel<ThreadViewModel>> ChangeThreadName(int id, string name);
         Task<ServiceResponseModel<ThreadModel>> DeleteThread(int id);
-        Task<ServiceResponseModel<ThreadModel>> AddThread(int interestId, string name);
+        Task<ServiceResponseModel<ThreadViewModel>> AddThread(int interestId, string name);
     }
 }

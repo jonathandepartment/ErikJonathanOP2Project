@@ -61,7 +61,7 @@ namespace Fora.Server.Controllers
             var result = await _threadService.AddThread(addThread.InterestId, addThread.Name);
             if (result.success)
             {
-                return Created("/api/threads", result);
+                return Created("/api/threads", result.Data);
             }
             return BadRequest(result);
         }

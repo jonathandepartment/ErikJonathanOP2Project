@@ -1,4 +1,6 @@
-﻿using Fora.Shared.ViewModels;
+﻿using Fora.Shared.DTO;
+using Fora.Shared.ViewModels;
+using Newtonsoft.Json;
 using System.Net.Http.Json;
 
 namespace Fora.Client.Services.ThreadService
@@ -11,6 +13,17 @@ namespace Fora.Client.Services.ThreadService
         {
             _httpClient = httpClient;
         }
+
+        public async Task<ThreadViewModel> AddThread(AddThreadModel thread)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/threads", thread);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<ThreadViewModel>(responseString);
+
+            return content;
+        }
+
         public async Task<List<ThreadViewModel>> GetThreadsByInterest(int id)
         {
             var result = await _httpClient.GetFromJsonAsync<List<ThreadViewModel>>($"/api/threads/{id}");
