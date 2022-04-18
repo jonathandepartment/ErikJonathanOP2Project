@@ -12,23 +12,18 @@
         <div class="col-lg-9 mb-3">
           <div class="row text-left mb-5">
             <div class="col-lg-6 mb-3 mb-sm-0">
-              <div class="dropdown bootstrap-select form-control form-control-lg bg-white bg-op-9 text-sm w-lg-50" style="width: 100%;">
+              
               <input @bind-value="SearchText" @bind-value:event="oninput" placeholder="Search..."class="form-control form-control-lg bg-white bg-op-9 text-sm w-lg-50" tabindex="-98"/>
               </div>
             </div>
             <div class="col-lg-6 text-lg-right">
-              <div class="dropdown bootstrap-select form-control form-control-lg bg-white bg-op-9 ml-auto text-sm w-lg-50" style="width: 100%;">
-                  <select class="form-control form-control-lg bg-white bg-op-9 ml-auto text-sm w-lg-50" data-toggle="select" tabindex="-98">
-                    <option> Filter by </option>
-                    <option> Alphabetical </option>
-                    <option> WIP... </option>
-                  </select>
+            <button @onclick="sortList" type="button" class="btn btn-primary">Sort list a-z</button>
               </div>
             </div>
           </div>
          </div>
-      </div>
-</div>
+
+
 
 @if(threads != null)
 {
@@ -37,7 +32,7 @@
         @if(!String.IsNullOrEmpty(thread.Name))
         {
           <a href="/threadmessages/@thread.Id" class="text-primary">@thread.Name</a>
-          <p class="text-sm"><span class="op-6">Posted</span> <a class="text-black" href="#">20 minutes</a> <span class="op-6">ago by</span> <a class="text-black">@(thread.User != null ? thread.User.Name : "Removed User")</a></p>
+          <p class="text-sm"><span class="op-6">Posted by</span> <a class="text-black">@(thread.User != null ? thread.User.Name : "Removed User")</a></p>
         }
     }
 }
@@ -66,16 +61,21 @@
     List<ThreadViewModel> filteredSearch => threads.Where(
         thread => thread.Name.ToLower().Contains(SearchText.ToLower())).ToList();
 
+    private void sortList()
+    {
+        threads = threads.OrderBy(x=>x.Name).ToList();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
-        // Hämta ett intresse från servern med det specifika Idt 
+          // Hämta ett intresse från servern med det specifika Idt 
 
-        var result = await threadService.GetThreadsByInterest(Id);
+          var result = await threadService.GetThreadsByInterest(Id);
 
-        if(result != null)
-        {
+          if(result != null)
+          {
             threads = result;
-        }
+          }
     }
 
     private void NavigateToMessages(int id)
