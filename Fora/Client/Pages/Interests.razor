@@ -1,85 +1,73 @@
 ﻿@page "/interests"
-@inject NavigationManager navigationmanager
-@inject IInterestService interestService
 @using Fora.Shared.ViewModels
 @using Newtonsoft.Json
+@using System.Security.Claims
+@attribute [Authorize]
+@inject NavigationManager navigationmanager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IInterestService interestService
+@inject IJSRuntime JSRuntime
+@inject ILocalStorageService LocalStorage
+@inject ISettingsService SettingsService
 
 <PageTitle>MyInterests</PageTitle>
 
-
 <h3>My Interests</h3>
 
-@*@if(AllInterests != null)
-{
-    @foreach(var interest in AllInterests)
-    {
-        @if(!String.IsNullOrEmpty(interest.Name))
-        {
-             <p class="text-danger box">@interest.Name</p>
-
-        }
-    }
-}*@
-
-@*<h5>
-<a href="#" class="text-primary">@interest.Name</a>
-<a href="#" class="font-weight-light">Number of threads: @interest.ThreadCount</a>
-</h5>*@
 
 @if(MyInterests != null)
 {
     @foreach(var interest in MyInterests)
     {
         @if(!String.IsNullOrEmpty(interest.Name))
-        {
-            <div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
-                <div class="row align-items-center">
-                  <div class="col-md-8 mb-3 mb-sm-0">
-                    <h5>
-                      <a class="text-primary" @onclick="@(() => NavigateToThreads(interest.Id))">@interest.Name</a>
-                    </h5>
+        {    
+                      <a class="text-primary" @onclick="@(() => NavigateToThreads(interest.Id))">@interest.Name</a>                   
                     <div class="text-sm op-5"> <a class="text-black mr-2">Threads: @interest.ThreadCount</a></div>
-                  </div>
-                  <div class="col-md-4 op-7">
-                    <div class="row text-center op-7">
-                      <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                      <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm"></span> </div>
-                      <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToEdit(interest.Id))">Edit</button> </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+                    @if (Admin || CurrentUserId == interest.AuthorId)
+                        {
+                            <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <button type="button" class="btn btn-primary" 
+                          @onclick="@(() => NavigateToEdit(interest.Id))">Edit</button> </div>
+                        }                        
         }
     }
 }
 
 
 
-
-
-
-
 @code {
+
     List<InterestViewModel> MyInterests { get; set; }
 
     public List<InterestViewModel>? AllInterests { get; set; }
+
+    int CurrentUserId { get; set; }
+
+    bool Admin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         MyInterests = await interestService.GetMyInterests();
         // Hämta intressen från databasen (via API)
-        //var response = await HttpClient.GetAsync("api/interests");
-
-        //var result = await response.Content.ReadAsStringAsync();
-
-        //AllInterests = JsonConvert.DeserializeObject<List<InterestViewModel>>(result);
         AllInterests = await interestService.GetAllInterests();
+
+        var authstate = await AuthStateProvider.GetAuthenticationStateAsync();
+        var id = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Authentication)
+            .Select(c => c.Value).SingleOrDefault();
+        var adminCheck = authstate.User.Claims.Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value).SingleOrDefault();
+
+        Admin = adminCheck == "Admin" ? true : false;
+        CurrentUserId = int.Parse(id);
+
     }
+
 
     private void NavigateToEdit(int id)
     {
         navigationmanager.NavigateTo($"/editinterest/{id}");
     }
+
 
     private void NavigateToThreads(int id)
     {
