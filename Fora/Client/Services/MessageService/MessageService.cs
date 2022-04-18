@@ -24,9 +24,9 @@ namespace Fora.Client.Services.MessageService
             return msg != null ? msg : null;
         }
 
-        public Task EditMessage(int id, AddMessageModel message)
+        public async Task EditMessage(int id, AddMessageModel message)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.PutAsJsonAsync($"/api/messages/{id}", message);
         }
 
         public async Task<ThreadViewModel> GetThread(int id)

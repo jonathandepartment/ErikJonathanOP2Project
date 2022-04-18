@@ -19,20 +19,28 @@
                 <div class="list-group">
                     @foreach (var message in Messages)
                     {
-                        <div class="list-group-item" style=@(message.User != null && message.User.Id == Id ? "background: blue;" : "")>
+                        <div class="list-group-item" style=@(message.User != null && message.User.Id == CurrentUserId ? "background: lightblue;" : "")>
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">@Thread.Name</h5>
                                 <small>@message.Created.ToShortDateString()</small>
                             </div>
                             <p class="mb-1">
                                 @(message.Removed ? "Message Removed" : message.Message)
-                                <span>@(message.Edited ? "Edited" : "")</span>
+                                <span class="badge bg-secondary float-end">@(message.Edited ? "Edited" : "")</span>
                             </p>
-                            @if (Admin || message.User != null && message.User.Id == Id)
-                           {
-                               <button class="btn btn-sm btn-danger" @onclick="() => RemoveMessage(message.Id)">Delete</button>
-                           }
-                            
+                            @if (Admin || message.User != null && message.User.Id == CurrentUserId && !message.Removed)
+                            {
+                                <button class="btn btn-sm btn-danger mr-3 float-end" @onclick="() => RemoveMessage(message.Id)">Delete</button>
+                                <TogglableComponent Title="Edit">
+                                    <EditForm Model="editMessage" OnValidSubmit="() => EditMessage(message.Id)">
+                                        <DataAnnotationsValidator />
+                                        <InputText @bind-Value="editMessage.Message" placeholder=@message.Message />
+                                        <button class="btn btn-sm btn-warning" type="submit">Edit</button>
+                                        <ValidationSummary />
+                                    </EditForm>                                    
+                                </TogglableComponent>
+                            }
+
                             @if (message.User != null)
                             {
                                 if (message.User.Banned)
@@ -60,8 +68,8 @@
         <div class="row">
             <h4>Add to the conversation</h4>
             <EditForm Model="addMessage" OnValidSubmit="AddMessage">
-                <DataAnnotationsValidator/>
-                <InputText @bind-Value="addMessage.Message"/>
+                <DataAnnotationsValidator />
+                <InputText @bind-Value="addMessage.Message" />
                 <button class="btn btn-sm btn-primary mt-2">Add</button>
                 <ValidationSummary />
             </EditForm>
@@ -81,6 +89,8 @@
     int CurrentUserId { get; set; }
 
     AddMessageModel addMessage = new();
+    AddMessageModel editMessage = new();
+
     ThreadViewModel Thread = new();
 
     string UserBg = "background: blue;";
@@ -117,14 +127,16 @@
         Messages.Insert(0, result);
     }
 
-    async Task EditMessage()
+    async Task EditMessage(int id)
     {
-
+        await messageService.EditMessage(id, editMessage);
+        Messages.Find(m => m.Id == id).Message = editMessage.Message;
     }
 
     async Task RemoveMessage(int id)
     {
         await messageService.RemoveMessage(id);
+        Messages.Find(m => m.Id == id).Removed = true;
     }
 
 }

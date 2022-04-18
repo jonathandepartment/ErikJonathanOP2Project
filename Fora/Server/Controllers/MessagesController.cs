@@ -43,13 +43,13 @@ namespace Fora.Server.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
-        public async Task<ActionResult> ChangeMessage(int id, [FromBody] string value)
+        public async Task<ActionResult> ChangeMessage(int id, AddMessageModel value)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value.Message))
             {
                 return BadRequest("New message can't be empty");
             }
-            var result = await _messageService.EditMessage(id, value);
+            var result = await _messageService.EditMessage(id, value.Message);
             if (result.success)
             {
                 return Ok();
