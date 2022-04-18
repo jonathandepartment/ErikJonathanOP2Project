@@ -24,6 +24,16 @@ namespace Fora.Client.Services.ThreadService
             return content;
         }
 
+        public async Task DeleteThread(int id)
+        {
+            await _httpClient.DeleteAsync($"/api/threads/{id}");
+        }
+
+        public async Task EditThreadName(int id, string newName)
+        {
+            var result = await _httpClient.PutAsJsonAsync($"/api/threads/{id}", newName);
+        }
+
         public async Task<List<ThreadViewModel>> GetThreadsByInterest(int id)
         {
             var result = await _httpClient.GetFromJsonAsync<List<ThreadViewModel>>($"/api/threads/{id}");
