@@ -33,13 +33,6 @@
         }
     }
 
-    //private async void RemoveUserInterest()
-    //{
-    //    // Ta bort användarintresset där interest.Id matchar överrens med Id i listan med alla användarintressen
-    //    var removeInterest = await interestService.DeleteUserInterest(Id);
-    //    NavigationManager.NavigateTo("Interests");
-    //}
-
     private async void DeleteUserInterest()
     {
         var removeInterest = await interestService.DeleteUserInterest(Id);
