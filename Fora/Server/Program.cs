@@ -66,13 +66,6 @@ builder.Services.AddScoped<IInterestService, InterestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IThreadService, ThreadService>();
 
-//builder.Services.AddAuthorization(auth =>
-//{
-//    auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-//        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-//        .RequireAuthenticatedUser().Build());
-//});
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
