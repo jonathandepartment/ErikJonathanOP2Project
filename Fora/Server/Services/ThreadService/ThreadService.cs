@@ -14,7 +14,7 @@ namespace Fora.Server.Services.ThreadService
             _accessor = accessor;
         }
 
-        public async Task<ServiceResponseModel<ThreadModel>> AddThread(int interestId, string name)
+        public async Task<ServiceResponseModel<ThreadViewModel>> AddThread(int interestId, string name)
         {
             // check if thread exists
             var thread = await _context.Threads
@@ -36,15 +36,21 @@ namespace Fora.Server.Services.ThreadService
                 _context.Threads.Add(newThread);
                 await _context.SaveChangesAsync();
 
-                return new ServiceResponseModel<ThreadModel>
+                return new ServiceResponseModel<ThreadViewModel>
                 {
-                    Data = null,
+                    Data = new ThreadViewModel
+                    {
+                        Id = newThread.Id,
+                        MessageCount = 0,
+                        Name = newThread.Name,
+                        User = null
+                    },
                     message = $"Thread {newThread.Name} created",
                     success = true
                 };
             }
 
-            return new ServiceResponseModel<ThreadModel>()
+            return new ServiceResponseModel<ThreadViewModel>()
             {
                 Data = null,
                 message = $"Thread: {thread.Name} allready exists",
