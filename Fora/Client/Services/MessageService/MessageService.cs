@@ -42,9 +42,9 @@ namespace Fora.Client.Services.MessageService
             return result;
         }
 
-        public Task RemoveMessage(int id)
+        public async Task RemoveMessage(int id)
         {
-            throw new NotImplementedException();
+            var result = await _httpClient.DeleteAsync($"/api/messages/{id}");
         }
     }
 }

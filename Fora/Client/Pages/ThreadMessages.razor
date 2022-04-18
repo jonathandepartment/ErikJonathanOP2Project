@@ -19,7 +19,7 @@
                 <div class="list-group">
                     @foreach (var message in Messages)
                     {
-                        <div class="list-group-item">
+                        <div class="list-group-item" style=@(message.User != null && message.User.Id == Id ? "background: blue;" : "")>
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">@Thread.Name</h5>
                                 <small>@message.Created.ToShortDateString()</small>
@@ -28,6 +28,10 @@
                                 @(message.Removed ? "Message Removed" : message.Message)
                                 <span>@(message.Edited ? "Edited" : "")</span>
                             </p>
+                            @if (Admin || message.User != null && message.User.Id == Id)
+                           {
+                               <button class="btn btn-sm btn-danger" @onclick="() => RemoveMessage(message.Id)">Delete</button>
+                           }
                             
                             @if (message.User != null)
                             {
@@ -79,6 +83,8 @@
     AddMessageModel addMessage = new();
     ThreadViewModel Thread = new();
 
+    string UserBg = "background: blue;";
+
     protected override async Task OnParametersSetAsync()
     {
         var result = await messageService.GetThreadMessages(Id);
@@ -86,6 +92,8 @@
         if(result != null)
         {
             Messages = result;
+            Messages.Sort((a,b) => DateTime.Compare(b.Created, a.Created));
+
         }
 
         Thread = await messageService.GetThread(Id);
@@ -104,7 +112,9 @@
 
     async Task AddMessage()
     {
-
+        addMessage.ThreadId = Thread.Id;
+        var result = await messageService.AddMessage(addMessage);
+        Messages.Insert(0, result);
     }
 
     async Task EditMessage()
@@ -112,9 +122,9 @@
 
     }
 
-    async Task RemoveMessage()
+    async Task RemoveMessage(int id)
     {
-        
+        await messageService.RemoveMessage(id);
     }
 
 }
