@@ -43,7 +43,13 @@ namespace Fora.Server.Services.ThreadService
                         Id = newThread.Id,
                         MessageCount = 0,
                         Name = newThread.Name,
-                        User = null
+                        User = new UserViewModel
+                        {
+                            Id = userFromDb.Id,
+                            Name = userFromDb.Username,
+                            Banned = userFromDb.Banned,
+                            Deleted = userFromDb.Deleted
+                        }
                     },
                     message = $"Thread {newThread.Name} created",
                     success = true

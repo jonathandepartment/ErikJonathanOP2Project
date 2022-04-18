@@ -131,6 +131,7 @@
     {
         await messageService.EditMessage(id, editMessage);
         Messages.Find(m => m.Id == id).Message = editMessage.Message;
+        Messages.Find(m => m.Id == id).Edited = true;
     }
 
     async Task RemoveMessage(int id)
